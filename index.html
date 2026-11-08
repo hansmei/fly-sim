@@ -121,6 +121,23 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
 .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
 .dot.hollow { background: var(--card); border: 2px solid var(--muted); }
 .dot.ring { background: var(--muted); box-shadow: 0 0 0 2px var(--card), 0 0 0 3.5px var(--ink); width: 9px; height: 9px; }
+.dot.back { background: var(--muted); position: relative; }
+.dot.back::after { content: ""; position: absolute; left: 3px; top: 4px; border: 3px solid transparent; border-top: 4px solid var(--card); }
+.dot.slow { background: var(--muted); position: relative; }
+.dot.slow::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--card); }
+
+/* Atferd */
+.sliders { display: grid; gap: 14px; }
+@media (min-width: 640px) { .sliders { grid-template-columns: 1fr 1fr; gap: 14px 28px; } }
+.slider { display: grid; gap: 4px; min-width: 0; }
+.slider label { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; font-weight: 500; }
+.slider output { font-family: var(--font-data); font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; }
+.slider .hint { font-size: 13px; color: var(--muted); }
+.slider input[type="range"] { width: 100%; accent-color: var(--signal); }
+.run-row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.run-status { font-size: 14px; color: var(--muted); }
+.chart-src { font-size: 13px; color: var(--muted); }
+.chart-src.custom { color: var(--signal); font-weight: 600; }
 
 /* Tekst */
 .prose { display: grid; gap: 12px; max-width: 40rem; }
@@ -164,6 +181,8 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
         <span><i class="dot" style="background:var(--window)"></i>Vindussete (A, F)</span>
         <span><i class="dot hollow"></i>Venter på tur</span>
         <span><i class="dot ring"></i>Henter bagasje</span>
+        <span><i class="dot back"></i>Går bakover etter koffert</span>
+        <span><i class="dot slow"></i>Treg passasjer</span>
       </div>
     </section>
 
@@ -171,6 +190,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
       <section aria-labelledby="res-h">
         <h2 id="res-h">Tid til siste passasjer er ute</h2>
         <p class="sub">Strek: median. Skygge: 8 av 10 flyginger havner innenfor. Kortere er bedre.</p>
+        <p class="chart-src" id="chart-src"></p>
         <div class="chart" id="chart"></div>
         <div class="axis" id="axis"></div>
         <details>
@@ -179,23 +199,42 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
         </details>
       </section>
 
+      <section aria-labelledby="beh-h">
+        <h2 id="beh-h">Juster hvordan folk oppfører seg</h2>
+        <p class="sub">Animasjonen bruker innstillingene med en gang. Trykk på knappen under for å kjøre alle scenariene på nytt og oppdatere grafen.</p>
+        <div class="sliders" id="sliders"></div>
+        <div class="run-row">
+          <button class="ctl primary" id="rerun" type="button">Kjør scenariene på nytt</button>
+          <button class="ctl" id="defaults" type="button">Tilbakestill</button>
+          <span class="run-status" id="run-status" role="status"></span>
+        </div>
+      </section>
+
       <section aria-labelledby="find-h" class="prose">
         <h2 id="find-h">Hva skjer med ditt forslag?</h2>
+        <p class="sub">Tallene her er med standardinnstillingene.</p>
         <ul>
-          <li>Ditt forslag tar <b data-med="midtgang-bakfra"></b>, mot <b data-med="rad"></b> for vanlig praksis. Det er bare litt raskere.</li>
+          <li>Ditt forslag tar <b data-med="midtgang-bakfra"></b>, mot <b data-med="rad"></b> for vanlig praksis. Det er nesten likt.</li>
           <li>Fase 1 går fort. Alle på midtgangssetene står i hver sin rad og tar ned bagasjen samtidig, i stedet for å vente på tur.</li>
           <li>Fase 2 gir bort gevinsten. Rad for rad betyr at bare én eller to rader henter bagasje om gangen igjen, og bakfra betyr at de bakerste må gå forbi alle de som venter. Tømmes resten forfra, tar det <b data-med="midtgang-forfra"></b>.</li>
           <li>Pausen mens fase 1 går ut døra koster også litt. Starter fase 2 med en gang midtgangssetene har kommet seg ut i midtgangen, tar det <b data-med="midtgang-overlapp"></b>.</li>
-          <li>Det raskeste er tre bølger der hver bølge går fritt: midtgangsseter, så midtseter, så vindusseter. Det tar <b data-med="bolger"></b>. Da tar mange ned bagasjen samtidig i hver bølge, og døra er nesten aldri ledig.</li>
+          <li>Det raskeste er tre bølger der hver bølge går fritt: midtgangsseter, så midtseter, så vindusseter. Det tar <b data-med="bolger"></b>. Da tar mange ned bagasjen samtidig i hver bølge.</li>
+          <li>Det som gjør alt tregere, er kofferter i en annen rad, trege passasjerer og at få tar ned bagasjen mens de venter ved setet. Hver av dem legger til to til tre minutter. Noen få utålmodige betyr nesten ingenting.</li>
           <li>Hovedlærdommen: det som går tregt, er bagasjen, ikke gåingen. Regler som lar mange hente bagasje samtidig og bruker hele midtgangen, slår regler som går rad for rad.</li>
         </ul>
       </section>
 
       <section aria-labelledby="mod-h" class="prose">
         <h2 id="mod-h">Slik er modellen bygd</h2>
-        <p>Midtgangen er delt i én plass per rad, pluss byssa ved døra. Det er plass til én person per plass. Passasjerene reiser seg, flytter seg sidelengs mot midtgangen og henter bagasjen stående i midtgangen. Den som står ved midtgangssetet og venter, kan begynne å ta ned bagasjen, men saktere. Når en plass blir ledig og både en som går og en som står ved setet vil inn, er det tilfeldig hvem som får den.</p>
+        <p>Midtgangen er delt i én plass per rad, pluss byssa ved døra. Det er plass til én person per plass. Passasjerene reiser seg, flytter seg sidelengs mot midtgangen og går mot døra. Når en plass blir ledig og flere vil inn, er det tilfeldig hvem som får den.</p>
+        <ul>
+          <li>Hver passasjer har sitt eget tempo. De trege bruker lengre tid på alt: å reise seg, flytte seg, ta ned bagasjen og gå.</li>
+          <li>Noen tar ned bagasjen mens de venter. Det kan de gjøre stående ved midtgangssetet eller i midtsetet når det er ledig, men saktere enn fra midtgangen.</li>
+          <li>Den som har kofferten i en annen rad, henter den der. Ligger den foran, plukker de den opp på vei ut. Ligger den bak, går de mot strømmen og presser seg forbi dem som er på vei ut. Mens de tar den ned, står de i midtgangen og stenger for alle bak.</li>
+          <li>Utålmodige følger ikke rekkefølgen. De reiser seg og går ut i midtgangen så snart det er plass.</li>
+        </ul>
         <div class="tbl-wrap"><table id="params"></table></div>
-        <p class="sub">Tallene er anslag og ikke målt i et ekte fly, så de absolutte tidene er usikre. Rekkefølgen mellom scenariene holder seg når vi endrer bagasjeandel, bagasjetid, fart gjennom døra og hvor høflige folk er. Bølgene var raskest i alle variantene vi prøvde.</p>
+        <p class="sub">Tallene er anslag og ikke målt i et ekte fly, så de absolutte tidene er usikre. Rekkefølgen mellom scenariene holder seg når vi endrer andelene over, og når folk slipper hverandre inn oftere eller sjeldnere. Bølgene var raskest i alle variantene vi prøvde.</p>
       </section>
     </div>
   </div>
@@ -218,39 +257,121 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
   document.querySelectorAll('[data-med]').forEach((el) => { el.textContent = fmtMin(byId[el.dataset.med].median); });
 
   /* ---------- Resultatgraf ---------- */
-  const maxMin = Math.ceil(Math.max(...RES.results.map((r) => r.p90)) / 60 / 2) * 2;
-  const xPct = (s) => (s / 60 / maxMin) * 100;
-  const sorted = U.SCENARIOS.slice().sort((a, b) => byId[a.id].median - byId[b.id].median);
   const chart = $('chart');
-  for (const s of sorted) {
-    const r = byId[s.id];
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'bar-row' + (s.id === MINE ? ' mine' : '');
-    b.dataset.id = s.id;
-    b.title = `${s.name}: median ${fmt(r.median)}, 8 av 10 mellom ${fmt(r.p10)} og ${fmt(r.p90)}`;
-    let grid = '';
-    for (let m = 0; m <= maxMin; m += 2) grid += `<i class="grid" style="left:${(m / maxMin) * 100}%"></i>`;
-    b.innerHTML = `<span class="bar-head"><span class="bar-name">${s.name}<span class="bar-tag${s.id === MINE ? ' mine' : ''}">${s.short}</span></span><span class="bar-val">${fmt(r.median)}</span></span>
-      <span class="track">${grid}<i class="range" style="left:${xPct(r.p10)}%;width:${xPct(r.p90) - xPct(r.p10)}%"></i><i class="med" style="left:${xPct(r.median)}%"></i></span>`;
-    b.addEventListener('click', () => { select(s.id); if (window.matchMedia('(max-width: 899px)').matches) document.querySelector('.sim-panel').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-    chart.appendChild(b);
+  let current = byId; // resultatene grafen viser nå
+  function renderChart(resById, srcText, custom) {
+    current = resById;
+    const list = Object.values(resById);
+    const rawMax = Math.max(...list.map((r) => r.p90)) / 60;
+    const tick = rawMax > 12 ? 4 : 2;
+    const maxMin = Math.ceil(rawMax / tick) * tick;
+    const xPct = (s) => (s / 60 / maxMin) * 100;
+    const sorted = U.SCENARIOS.slice().sort((a, b) => resById[a.id].median - resById[b.id].median);
+    chart.innerHTML = '';
+    for (const s of sorted) {
+      const r = resById[s.id];
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'bar-row' + (s.id === MINE ? ' mine' : '');
+      b.dataset.id = s.id;
+      b.setAttribute('aria-pressed', String(s.id === scenario));
+      b.title = `${s.name}: median ${fmt(r.median)}, 8 av 10 mellom ${fmt(r.p10)} og ${fmt(r.p90)}`;
+      let grid = '';
+      for (let m = 0; m <= maxMin; m += tick) grid += `<i class="grid" style="left:${(m / maxMin) * 100}%"></i>`;
+      b.innerHTML = `<span class="bar-head"><span class="bar-name">${s.name}<span class="bar-tag${s.id === MINE ? ' mine' : ''}">${s.short}</span></span><span class="bar-val">${fmt(r.median)}</span></span>
+        <span class="track">${grid}<i class="range" style="left:${xPct(r.p10)}%;width:${xPct(r.p90) - xPct(r.p10)}%"></i><i class="med" style="left:${xPct(r.median)}%"></i></span>`;
+      b.addEventListener('click', () => { select(s.id); if (window.matchMedia('(max-width: 899px)').matches) document.querySelector('.sim-panel').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      chart.appendChild(b);
+    }
+    const axis = $('axis');
+    axis.innerHTML = '';
+    for (let m = 0; m <= maxMin; m += tick) axis.insertAdjacentHTML('beforeend', `<span style="left:${(m / maxMin) * 100}%">${m}${m === maxMin ? ' min' : ''}</span>`);
+    $('tbl').innerHTML = '<thead><tr><th>Scenario</th><th class="num">Median</th><th class="num">10 %</th><th class="num">90 %</th></tr></thead><tbody>' +
+      sorted.map((s) => { const r = resById[s.id]; return `<tr><td>${s.name}</td><td class="num">${fmt(r.median)}</td><td class="num">${fmt(r.p10)}</td><td class="num">${fmt(r.p90)}</td></tr>`; }).join('') + '</tbody>';
+    const src = $('chart-src');
+    src.textContent = srcText; src.classList.toggle('custom', !!custom);
   }
-  const axis = $('axis');
-  for (let m = 0; m <= maxMin; m += 2) axis.insertAdjacentHTML('beforeend', `<span style="left:${(m / maxMin) * 100}%">${m}${m === maxMin ? ' min' : ''}</span>`);
-  $('tbl').innerHTML = '<thead><tr><th>Scenario</th><th class="num">Median</th><th class="num">10 %</th><th class="num">90 %</th></tr></thead><tbody>' +
-    sorted.map((s) => { const r = byId[s.id]; return `<tr><td>${s.name}</td><td class="num">${fmt(r.median)}</td><td class="num">${fmt(r.p10)}</td><td class="num">${fmt(r.p90)}</td></tr>`; }).join('') + '</tbody>';
+  const DEFAULT_SRC = `Standardinnstillinger, ${RES.runs} flyginger per scenario.`;
 
+  /* ---------- Atferd ---------- */
   const P = RES.params;
+  const SLIDERS = [
+    { key: 'impatientShare', label: 'Utålmodige som går før tur', hint: 'Bryter rekkefølgen og går ut i midtgangen så snart det er plass.', max: 50, step: 5 },
+    { key: 'seatBagShare', label: 'Tar ned bagasjen fra setet mens de venter', hint: 'Står ved midtgangssetet eller i et ledig midtsete.', max: 100, step: 10 },
+    { key: 'otherRowShare', label: 'Har kofferten i en annen rad', hint: 'Av dem med bagasje. Tre av åtte foran, resten en til to rader bak.', max: 80, step: 10 },
+    { key: 'slowShare', label: 'Trege passasjerer', hint: `Bruker ${String(P.slowFactor[0]).replace('.', ',')}–${String(P.slowFactor[1]).replace('.', ',')} ganger så lang tid på alt.`, max: 50, step: 5 },
+    { key: 'yieldP', label: 'Slipper inn en fra setet foran seg', hint: 'Sjansen for at en som går i midtgangen stopper og slipper noen ut fra raden sin.', max: 100, step: 10 },
+  ];
+  let behavior = {};
+  const slidersEl = $('sliders');
+  for (const d of SLIDERS) {
+    const v = Math.round(P[d.key] * 100);
+    slidersEl.insertAdjacentHTML('beforeend', `<div class="slider">
+      <label for="s-${d.key}"><span>${d.label}</span><output id="o-${d.key}" for="s-${d.key}">${v} %</output></label>
+      <input type="range" id="s-${d.key}" min="0" max="${d.max}" step="${d.step}" value="${v}">
+      <span class="hint">${d.hint}</span></div>`);
+  }
+  function readBehavior() {
+    const o = {};
+    for (const d of SLIDERS) {
+      const v = Number($('s-' + d.key).value);
+      $('o-' + d.key).textContent = v + ' %';
+      if (Math.abs(v / 100 - P[d.key]) > 1e-9) o[d.key] = v / 100;
+    }
+    return o;
+  }
+  let lastRunKey = '{}';
+  slidersEl.addEventListener('input', () => {
+    behavior = readBehavior();
+    const key = JSON.stringify(behavior);
+    $('run-status').textContent = key === lastRunKey ? '' : 'Grafen viser ikke disse innstillingene ennå.';
+    reset();
+  });
+  $('defaults').addEventListener('click', () => {
+    for (const d of SLIDERS) $('s-' + d.key).value = Math.round(P[d.key] * 100);
+    behavior = readBehavior(); lastRunKey = '{}';
+    renderChart(byId, DEFAULT_SRC, false);
+    $('run-status').textContent = '';
+    reset();
+  });
+  const RERUNS = 60;
+  let running = false;
+  $('rerun').addEventListener('click', () => {
+    if (running) return;
+    running = true;
+    const btn = $('rerun'); btn.disabled = true;
+    const ov = Object.assign({}, behavior), key = JSON.stringify(ov);
+    const times = Object.fromEntries(U.SCENARIOS.map((s) => [s.id, []]));
+    const jobs = [];
+    for (const s of U.SCENARIOS) for (let i = 0; i < RERUNS; i++) jobs.push([s.id, 1 + i]);
+    let j = 0;
+    (function chunk() {
+      const until = performance.now() + 40;
+      while (j < jobs.length && performance.now() < until) { const [id, sd] = jobs[j++]; times[id].push(U.createSim(id, sd, ov).run()); }
+      $('run-status').textContent = `Kjører … ${Math.round((j / jobs.length) * 100)} %`;
+      if (j < jobs.length) { setTimeout(chunk, 0); return; }
+      const res = Object.fromEntries(U.SCENARIOS.map((s) => [s.id, U.stats(s.id, times[s.id])]));
+      const isDefault = key === '{}';
+      renderChart(res, isDefault ? `Standardinnstillinger, ${RERUNS} flyginger per scenario.` : `Dine innstillinger, ${RERUNS} flyginger per scenario.`, !isDefault);
+      lastRunKey = key;
+      $('run-status').textContent = 'Ferdig. Grafen viser innstillingene over.';
+      btn.disabled = false; running = false;
+    })();
+  });
+
+  const pct = (x) => Math.round(x * 100) + ' %';
+  const num = (x) => String(x).replace('.', ',');
   const rows = [
     ['Rader × seter', `${P.rows} × 6 = ${P.rows * 6}`],
-    ['Gå én rad fremover (ca. 0,76 m)', `${P.walk[0]}–${P.walk[1]} s`],
+    ['Gå én rad fremover (ca. 0,76 m), middels tempo', `${num(P.walk[0])}–${num(P.walk[1])} s`],
     ['Reise seg fra midtgangssetet', `${P.standUp[0]}–${P.standUp[1]} s`],
-    ['Flytte seg ett sete sidelengs', `${P.seatStep[0]}–${P.seatStep[1]} s`],
-    ['Andel med bagasje i hylla', `${Math.round(P.bagShare * 100)} %`],
+    ['Flytte seg ett sete sidelengs', `${num(P.seatStep[0])}–${P.seatStep[1]} s`],
+    ['Andel med bagasje i hylla', pct(P.bagShare)],
     ['Hente bagasje, median', `${P.bagMedian} s (maks ${P.bagMax} s)`],
+    ['Hente bagasje fra midtgangssetet / midtsetet', `${pct(P.seatBagRate[0])} / ${pct(P.seatBagRate[1])} av farten`],
     ['Uten hyllebagasje', `${P.noBag[0]}–${P.noBag[1]} s`],
-    ['Fra byssa og ut døra', `${P.doorTime} s`],
-    ['Slipper inn en fra setet foran en som går', `${Math.round(P.yieldP * 100)} %`],
+    ['Presse seg forbi én person', `${num(P.squeezeTime)} s`],
+    ['Fra byssa og ut døra', `${num(P.doorTime)} s`],
+    ['Spredning i tempo for vanlige passasjerer', `± ${pct(P.paceSigma)}`],
   ];
   $('params').innerHTML = '<tbody>' + rows.map(([k, v]) => `<tr><td>${k}</td><td class="num">${v}</td></tr>`).join('') + '</tbody>';
 
@@ -259,7 +380,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
   for (const s of U.SCENARIOS) sel.insertAdjacentHTML('beforeend', `<option value="${s.id}">${s.short}</option>`);
   const canvas = $('cabin');
   const ctx = canvas.getContext('2d');
-  let sim, scenario, seed = 1, speed = 10, playing = true, lastTs = null, geo = null;
+  let sim, scenario = MINE, seed = 1, speed = 10, playing = true, lastTs = null, geo = null;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced) playing = false;
 
@@ -337,11 +458,17 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
         const x0 = seatX(a.side, a.depth), x1 = seatX(a.side, a.depth - 1);
         return [x0 + (x1 - x0) * prog, rowY(a.row)];
       }
-      case 'bag': case 'wait':
+      case 'bag': case 'wait': case 'back':
         return [seatX(0, 0), rowY(a.cell)];
-      case 'move': {
+      case 'move': case 'moveBack': {
         const y0 = rowY(a.from), y1 = rowY(a.cell);
         return [seatX(0, 0), y0 + (y1 - y0) * prog];
+      }
+      case 'squeeze': case 'squeezeBack': {
+        // To personer bytter plass: den som skal bakover går litt ut til siden.
+        const y0 = rowY(a.from), y1 = rowY(a.cell);
+        const off = Math.sin(Math.PI * prog) * geo.c * 0.35 * (a.state === 'squeezeBack' ? -1 : 1);
+        return [seatX(0, 0) + off, y0 + (y1 - y0) * prog];
       }
       case 'door': {
         const x0 = seatX(0, 0), x1 = geo.m * 0.35;
@@ -366,10 +493,18 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
       } else {
         ctx.fillStyle = col; ctx.fill();
       }
+      // Treg passasjer: hull i midten
+      if (a.slow) { ctx.beginPath(); ctx.arc(p[0], p[1], rad * 0.38, 0, Math.PI * 2); ctx.fillStyle = colors.card; ctx.fill(); }
+      // Skal bakover etter kofferten: liten pil mot halen
+      if (a.go && a.needBag && a.bagRow > a.row && a.cell < a.bagRow) {
+        const w = rad * 0.55;
+        ctx.beginPath(); ctx.moveTo(p[0] - w, p[1] - w * 0.4); ctx.lineTo(p[0] + w, p[1] - w * 0.4); ctx.lineTo(p[0], p[1] + w * 0.7); ctx.closePath();
+        ctx.fillStyle = colors.card; ctx.fill();
+      }
       // Bagasje: bue som viser hvor langt de har kommet
       let frac = null;
       if (a.state === 'bag' && a.timerMax > 0) frac = 1 - Math.max(0, a.timer) / a.timerMax;
-      else if (a.state === 'ready' && a.bagLeft < a.bagT && a.bagLeft > 0) frac = 1 - a.bagLeft / a.bagT;
+      else if (a.depth > 0 && a.bagLeft < a.bagT && a.bagLeft > 0) frac = 1 - a.bagLeft / a.bagT;
       if (frac !== null) {
         ctx.beginPath(); ctx.arc(p[0], p[1], rad + 2.2, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * frac);
         ctx.lineWidth = 2; ctx.strokeStyle = colors.ink; ctx.stroke();
@@ -388,7 +523,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     $('play').textContent = sim.done ? 'Spill av igjen' : playing ? 'Pause' : 'Spill av';
   }
 
-  function reset() { sim = U.createSim(scenario, seed); lastTs = null; draw(); updateReadout(); }
+  function reset() { sim = U.createSim(scenario, seed, behavior); lastTs = null; draw(); updateReadout(); }
 
   function select(id, fromHash) {
     if (!byId[id]) id = MINE;
@@ -436,6 +571,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
 
   readColors();
   layout();
+  renderChart(byId, DEFAULT_SRC, false);
   select(location.hash.slice(1) || MINE, true);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (sim) draw(); });
   requestAnimationFrame(frame);
