@@ -1,0 +1,12 @@
+{
+  "name": "fly-utstigning",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Simulering av utstigning fra Boeing 737 gjennom bare fremre dør",
+  "scripts": {
+    "sim": "node run.js 200",
+    "optimize": "node optimize.js",
+    "test": "node --test test.js"
+  },
+  "license": "UNLICENSED"
+}
