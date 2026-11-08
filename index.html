@@ -88,7 +88,9 @@ summary { cursor: pointer; color: var(--muted); }
 .tbl-wrap { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 8px; }
 th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
-td.num, th.num { text-align: right; font-family: var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.num { font-family: var(--font-data); }
+th { font-weight: 600; }
 
 /* Simulering */
 .sim-panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 12px; }
@@ -141,6 +143,57 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
 .chart-src { font-size: 13px; color: var(--muted); }
 .chart-src.custom { color: var(--signal); font-weight: 600; }
 
+/* Sammendrag */
+.exec { display: grid; gap: 28px; background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+  padding-block: 20px 24px; padding-inline: 18px; }
+@media (min-width: 900px) { .exec { padding-inline: 32px; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px 48px; } .exec > .span { grid-column: 1 / -1; } }
+.exec h2 { font-size: 24px; }
+.exec h3 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 0; }
+.exec-block { display: grid; gap: 14px; min-width: 0; align-content: start; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; justify-self: start; }
+.seg button { font: inherit; font-size: 14px; padding: 7px 12px; border: 0; background: var(--paper); color: var(--muted); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.seg button:focus-visible { outline: 2px solid var(--signal); outline-offset: -2px; }
+.cmp { display: grid; gap: 14px; }
+.cmp-row { display: grid; gap: 6px; }
+.cmp-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.cmp-name { font-weight: 600; font-size: 16px; line-height: 1.25; }
+.cmp-name small { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
+.cmp-val { font-family: var(--font-data); font-size: 22px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cmp-bar { position: relative; height: 22px; background: var(--paper); border-radius: 4px; }
+.cmp-bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--muted); }
+.cmp-row.best .cmp-bar i { background: var(--signal); }
+.cmp-row.bound .cmp-bar i { background: transparent; border: 2px dashed var(--ink); }
+.cmp-row.best .cmp-val { color: var(--signal); }
+.cmp-delta { font-size: 13px; color: var(--muted); }
+.cmp-delta b { color: var(--ink); font-weight: 600; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.kpi { border-top: 2px solid var(--line); padding-top: 8px; display: grid; gap: 2px; }
+.kpi .v { font-family: var(--font-data); font-size: 22px; font-variant-numeric: tabular-nums; }
+.kpi .k { font-size: 13px; color: var(--muted); line-height: 1.35; }
+.kpi.accent { border-top-color: var(--signal); }
+.steps { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 12px; counter-reset: step; }
+.steps li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; counter-increment: step; }
+.steps li::before { content: counter(step); font-family: var(--font-display); font-weight: 700; font-size: 16px;
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--paper); }
+.steps b { font-weight: 600; }
+.airlines { display: grid; gap: 14px; }
+@media (min-width: 640px) { .airlines { grid-template-columns: 1fr 1fr; } }
+.airline { border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 10px; min-width: 0; background: var(--paper); }
+.airline h4 { margin: 0; font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+.airline dl { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; font-size: 14px; }
+.airline dt { color: var(--muted); }
+.airline dd { margin: 0; text-align: right; font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+.airline dd.big { font-size: 18px; color: var(--signal); }
+.assume { display: grid; gap: 10px; }
+.assume label { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 10px; align-items: center; font-size: 14px; }
+.assume input { font: inherit; font-family: var(--font-data); padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--ink); width: 100%; text-align: right; }
+.assume .grp { font-weight: 600; font-size: 14px; margin-top: 6px; }
+.note { font-size: 13px; color: var(--muted); }
+.play-link { justify-self: start; font: inherit; font-size: 14px; font-weight: 600; color: var(--signal); background: none; border: 0; padding: 2px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.play-link:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+.note a { color: inherit; }
+
 /* Tekst */
 .prose { display: grid; gap: 12px; max-width: 40rem; }
 .prose ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
@@ -151,10 +204,45 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">Boeing 737-800 · 180 passasjerer · bare dør 1L åpen</div>
+    <div class="eyebrow">Boeing 737-800 · bare dør 1L åpen · simulert <span data-runs>200</span> ganger per scenario</div>
     <h1>Hvor fort kommer alle ut?</h1>
-    <p class="lede">Fem måter å be passasjerene gå ut på, simulert <span data-runs>200</span> ganger hver med ulike passasjerer og ulik bagasje. Trykk på et scenario for å se det skje.</p>
+    <p class="lede" id="exec-lede"></p>
   </header>
+
+  <section class="exec" aria-labelledby="exec-h">
+    <div class="exec-block">
+      <h2 id="exec-h">Sammendrag</h2>
+      <div class="seg" role="group" aria-label="Hvor fullt flyet er">
+        <button type="button" data-lf="1" aria-pressed="true">Fullt fly</button>
+        <button type="button" data-lf="0.86" aria-pressed="false">86 % fullt</button>
+      </div>
+      <div class="cmp" id="cmp"></div>
+      <div class="kpis" id="kpis"></div>
+    </div>
+
+    <div class="exec-block">
+      <h3>Hva som skal til</h3>
+      <ol class="steps">
+        <li><span><b>Før døra åpnes</b> står passasjerene på midtgangssetene klare med bagasjen. Rundt 70 % gjør dette allerede i dag.</span></li>
+        <li><span><b>Bølge 1: midtgangssetene går.</b> Imens flytter midt- og vinduspassasjerer seg inn på det ledige setet og tar ned bagasjen der.</span></li>
+        <li><span><b>Den som er klar, fletter inn</b> når plassen rett bak i midtgangen er tom. Ellers venter de.</span></li>
+        <li><span><b>Bølge 2 og 3:</b> midtsetene går ut i gangen samtidig, så vindussetene.</span></li>
+      </ol>
+      <p class="note">Kabinpersonalet må annonsere bølgene tydelig og holde igjen dem som ikke er klare. Det bør prøves på noen ruter først for å se hvor godt passasjerene følger det.</p>
+      <p class="note"><b>Mer å hente:</b> får passasjerene beskjed ved ombordstigning om å legge bagasjen over egen rad, faller tiden til rundt 6 minutter. Kortere enn den teoretiske grensen går det bare med en dør til, for eksempel trapp bak.</p>
+    </div>
+
+    <div class="exec-block span">
+      <h3>Hva det er verdt i året</h3>
+      <p class="note">Gevinsten gjelder flyginger der passasjerene bare går ut gjennom fremre dør, typisk ved gate med én bro. Tiden som spares i snuoperasjonen, er verdsatt på to måter: hva flyet koster når det står ved gate, og hva et forsinkelsesminutt koster i snitt. Det siste gjelder bare minutter som faktisk hindrer forsinkelser, så den sanne verdien ligger trolig mellom.</p>
+      <div class="airlines" id="airlines"></div>
+      <details>
+        <summary>Endre forutsetningene</summary>
+        <div class="assume" id="assume"></div>
+      </details>
+      <p class="note" id="sources">Kilder: Norwegians passasjertall er gruppens 27,3 millioner i 2025 minus Widerøes 4,13 millioner (<a href="https://www.inderes.fi/releases/nas-norwegian-group-delivers-record-result-for-2025-and-increases-dividend" target="_blank" rel="noopener">årsresultat 2025</a>), og kabinfaktoren er fra 4. kvartal 2025 (<a href="https://www.inderes.fi/en/releases/norwegian-air-shuttle-asa-nas-traffic-figures-for-december-2025" target="_blank" rel="noopener">trafikktall desember 2025</a>). SAS fløy 28,3 millioner passasjerer i regnskapsåret 2025 (<a href="https://www.sasgroup.net/files/documents/financial-reports/2025/sas-ab-annual-report-fy25.pdf" target="_blank" rel="noopener">årsrapport FY25</a>). Kostnaden ved gate (17,78 € per minutt, 2022-priser) og forsinkelseskostnaden (rundt 100 € per minutt) er Eurocontrols standardverdier (<a href="https://ansperformance.eu/economics/cba/standard-inputs/chapters/cost_of_delay.html" target="_blank" rel="noopener">Standard Inputs</a>). SAS sin andel på A320-fly, SAS sin kabinfaktor, andelen flyginger med bare fremre dør og andelen som snur videre er anslag.</p>
+    </div>
+  </section>
 
   <div class="cols">
     <section class="sim-panel" aria-label="Animasjon">
@@ -219,14 +307,36 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
         <h2 id="find-h">Hva gir ditt forslag?</h2>
         <p class="sub">Tallene her er med standardinnstillingene.</p>
         <ul>
-          <li>Ditt forslag tar <b data-med="forslag"></b>, mot <b data-med="rad"></b> for vanlig praksis. Det er rundt en tredel raskere, og raskest av alle scenariene.</li>
+          <li>Ditt forslag tar <b data-med="forslag"></b>, mot <b data-med="fritt"></b> for vanlig praksis, der alle går når de kan. Det er rundt en tredel raskere, og like raskt som den beste regelen søket fant (<b data-med="beste"></b>).</li>
           <li>Gevinsten kommer fra innflettingen. Mens bølge 1 går ut, er det ledig plass i midtgangen og døra. Midt- og vinduspassasjerer som har tatt ned bagasjen ved det ledige midtgangssetet, bruker den plassen i stedet for å vente.</li>
           <li>Å gjøre seg klar uten å gå hjelper ikke i seg selv. Uten innfletting tar det <b data-med="forslag-uten-innfletting"></b>, litt tregere enn strenge bølger med <b data-med="bolger"></b>. Da fyller de som er klare midtgangen bakfra, og de som ikke er klare lenger fram, kommer ikke ut før strømmen har passert. Når de så tar ned bagasjen midt i strømmen, stopper alle bak.</li>
-          <li>Det at alle i en bølge går ut i gangen og henter bagasjen samtidig, slik du beskrev, er effektivt. Det er derfor også strenge bølger slår både vanlig praksis og fritt fram (<b data-med="fritt"></b>).</li>
-          <li>Forslaget er raskest i alle variantene vi prøvde, med 8–9 minutter: når bare halvparten er klare ved landing, når mange har kofferten i en annen rad, når det er mange trege, og når folk sjelden eller ofte slipper hverandre inn.</li>
-          <li>Business i rad 1–4 med tomt midtsete gir 172 passasjerer. Følger business samme regler som resten, tar ditt forslag <b data-med="business:forslag"></b>. Skal business gå først, tar det <b data-med="business-forst:forslag"></b>. Fortrinnet koster altså rundt et halvt minutt, fordi forhenget stopper økonomi mens business går. Business selv er ute etter under ett minutt. For vanlig praksis koster fortrinnet nesten ingenting (<b data-med="business:rad"></b> mot <b data-med="business-forst:rad"></b>), siden business uansett sitter forrest.</li>
-          <li>Hvor streng «klar bane» er, betyr lite. Krever vi én tom plass bak, tar det 7,9 minutter. Krever vi fire, tar det 8,8.</li>
+          <li>Det at alle i en bølge går ut i gangen og henter bagasjen samtidig, slik du beskrev, er effektivt. Det er derfor også strenge bølger slår både vanlig praksis og høflig rad for rad (<b data-med="rad"></b>).</li>
+          <li>Forslaget holder seg på 8–9 minutter i alle variantene vi prøvde: når bare halvparten er klare ved landing, når mange har kofferten i en annen rad, når det er mange trege, og når folk sjelden eller ofte slipper hverandre inn.</li>
+          <li>Business i rad 1–4 med tomt midtsete gir 172 passasjerer. Følger business samme regler som resten, tar ditt forslag <b data-med="business:forslag"></b>. Skal business gå først, tar det <b data-med="business-forst:forslag"></b>. Fortrinnet koster altså drøyt et halvt minutt, fordi forhenget stopper økonomi mens business går. Business selv er ute etter under ett minutt. For vanlig praksis koster fortrinnet nesten ingenting (<b data-med="business:fritt"></b> mot <b data-med="business-forst:fritt"></b>), siden business uansett sitter forrest.</li>
+          <li>Hvor streng «klar bane» er, betyr lite. Krever vi én tom plass bak, tar det 8,1 minutter. Krever vi fire, tar det 8,7.</li>
         </ul>
+      </section>
+
+      <section aria-labelledby="opt-h" class="prose">
+        <h2 id="opt-h">Finnes det en bedre regel?</h2>
+        <p>Vi testet <b id="opt-n"></b> regler. Hver regel er en kombinasjon av hvilke grupper som går i hvilken rekkefølge (setekolonne, side, del av flyet, oddetalls- eller partallsrader), når neste gruppe slippes, om de som venter gjør seg klare, og om de fletter inn. De beste ble kjørt <span id="opt-fine"></span> ganger hver.</p>
+        <div class="chart" id="opt-chart"></div>
+        <div class="axis" id="opt-axis"></div>
+        <ul>
+          <li><b>Nedre grense.</b> Døra og plassen foran den rommer én person om gangen. Selv om døra aldri står ledig, tar det <b id="opt-lb"></b> å få 180 personer gjennom. Ingen regel kan slå det.</li>
+          <li><b>Det finnes ingen enkelt vinner, men et platå.</b> De beste reglene havner alle rundt 8 minutter, og forskjellen mellom dem er mindre enn variasjonen fra fly til fly. Ditt forslag er en av dem.</li>
+          <li><b>Det alle de beste har felles:</b> folk tar ned bagasjen mens de venter, de som er klare fletter inn i ledige hull, og grupper med folk går ut i gangen samtidig. Nøyaktig hvordan gruppene deles inn, betyr lite.</li>
+          <li><b>Resten skyldes bagasjen, ikke rekkefølgen.</b> Tabellen under viser hva som skjer når passasjerene håndterer bagasjen bedre. Med perfekt forberedelse kommer ditt forslag nesten ned på grensen.</li>
+        </ul>
+        <div class="tbl-wrap"><table id="opt-behavior"></table></div>
+        <details>
+          <summary>De beste reglene</summary>
+          <div class="tbl-wrap"><table id="opt-top"></table></div>
+        </details>
+        <details>
+          <summary>Hvor godt de beste reglene tåler annen atferd</summary>
+          <div class="tbl-wrap"><table id="opt-robust"></table></div>
+        </details>
       </section>
 
       <section aria-labelledby="mod-h" class="prose">
@@ -234,7 +344,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
         <p>Midtgangen er delt i én plass per rad, pluss byssa ved døra. Det er plass til én person per plass. Passasjerene reiser seg, flytter seg sidelengs mot midtgangen og går mot døra. Når en plass blir ledig og flere vil inn, er det tilfeldig hvem som får den.</p>
         <ul>
           <li>Når døra åpnes, står 70 % av dem på midtgangssetene klare med bagasjen. Én per rad står i midtgangen, den andre ved setet sitt.</li>
-          <li>I ditt forslag kan midt- og vinduspassasjerer flytte seg inn mot midtgangen og ta ned bagasjen før det er deres tur. De går ut før tur bare når de er klare og de to plassene bak dem i midtgangen er tomme. Det er det modellen kaller klar bane.</li>
+          <li>I ditt forslag kan midt- og vinduspassasjerer flytte seg inn mot midtgangen og ta ned bagasjen før det er deres tur. De går ut før tur bare når de er klare og plassen rett bak dem i midtgangen er tom. Det er det modellen kaller klar bane.</li>
           <li>Hver passasjer har sitt eget tempo. De trege bruker lengre tid på alt: å reise seg, flytte seg, ta ned bagasjen og gå.</li>
           <li>Noen tar ned bagasjen mens de venter. Det kan de gjøre stående ved midtgangssetet eller i midtsetet når det er ledig, men saktere enn fra midtgangen.</li>
           <li>Den som har kofferten i en annen rad, henter den der. Ligger den foran, plukker de den opp på vei ut. Ligger den bak, går de mot strømmen og presser seg forbi dem som er på vei ut. Mens de tar den ned, står de i midtgangen og stenger for alle bak.</li>
@@ -249,6 +359,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
 
 <script src="sim.js"></script>
 <script src="results.js"></script>
+<script src="optimum.js"></script>
 <script>
 (function () {
   'use strict';
@@ -614,6 +725,150 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     $('run-status').textContent = JSON.stringify(behavior) === '{}' ? '' : 'Grafen viser ikke disse innstillingene ennå.';
     reset();
   });
+  /* ---------- Sammendrag ---------- */
+  const SUM = RES.summary;
+  // Lineær interpolasjon i tabellen over kabinfaktor.
+  function atLF(lf) {
+    lf = Math.max(SUM[0].loadFactor, Math.min(1, lf));
+    let i = 0;
+    while (i < SUM.length - 2 && SUM[i + 1].loadFactor < lf) i++;
+    const a = SUM[i], b = SUM[i + 1], w = (lf - a.loadFactor) / (b.loadFactor - a.loadFactor);
+    const L = (x, y) => x + (y - x) * w;
+    return {
+      vanlig: L(a.fritt.median, b.fritt.median), forslag: L(a.forslag.median, b.forslag.median),
+      grense: L(a.lowerBound, b.lowerBound), paxVanlig: L(a.fritt.paxMean, b.fritt.paxMean),
+      paxForslag: L(a.forslag.paxMean, b.forslag.paxMean), passengers: L(a.passengers, b.passengers),
+    };
+  }
+  const mmss = (sec) => fmt(Math.round(sec));
+  const pctOf = (a, b) => Math.round((1 - a / b) * 100);
+  let execLF = 1;
+  function renderExec() {
+    const x = atLF(execLF);
+    const save = x.vanlig - x.forslag;
+    const full = atLF(1);
+    $('exec-lede').innerHTML = `Med ditt forslag kommer en full Boeing 737 ut gjennom fremre dør på <b>${mmss(full.forslag)}</b>, mot <b>${mmss(full.vanlig)}</b> slik det gjøres i dag. Det er <b>${fmtMin(full.vanlig - full.forslag)}</b> raskere, og forslaget ligger på platået av de beste reglene vi fant. Raskere enn <b>${mmss(full.grense)}</b> går det ikke med én dør.`;
+    const max = x.vanlig * 1.04;
+    const rows = [
+      { cls: '', name: 'Vanlig praksis', sub: 'Alle går når de kan', v: x.vanlig, scen: 'fritt' },
+      { cls: 'best', name: 'Beste løsning', sub: 'Ditt forslag: tre bølger med innfletting', v: x.forslag, scen: 'forslag',
+        delta: `<b>${fmt(Math.round(save))}</b> raskere enn vanlig praksis (−${pctOf(x.forslag, x.vanlig)} %)` },
+      { cls: 'bound', name: 'Teoretisk optimum', sub: 'Døra står aldri ledig', v: x.grense,
+        delta: `${fmt(Math.round(x.forslag - x.grense))} under beste løsning. Resten skyldes bagasjen, ikke rekkefølgen.` },
+    ];
+    $('cmp').innerHTML = rows.map((r) => `<div class="cmp-row ${r.cls}"${r.scen ? ` data-scen="${r.scen}"` : ''}>
+      <div class="cmp-head"><span class="cmp-name">${r.name}<small>${r.sub}</small></span><span class="cmp-val">${mmss(r.v)}</span></div>
+      <div class="cmp-bar" role="img" aria-label="${r.name}: ${mmss(r.v)}"><i style="width:${(r.v / max) * 100}%"></i></div>
+      ${r.delta ? `<div class="cmp-delta">${r.delta}</div>` : ''}${r.scen ? `<button type="button" class="play-link" data-scen="${r.scen}">Se animasjonen</button>` : ''}</div>`).join('');
+    $('kpis').innerHTML = `
+      <div class="kpi accent"><span class="v">${fmtMin(save)}</span><span class="k">spart per flyging med ${Math.round(x.passengers)} passasjerer</span></div>
+      <div class="kpi"><span class="v">${fmt(Math.round(x.paxVanlig))} → ${fmt(Math.round(x.paxForslag))}</span><span class="k">tid til snittpassasjeren er ute</span></div>
+      <div class="kpi"><span class="v">−${pctOf(x.forslag, x.vanlig)} %</span><span class="k">kortere utstigning</span></div>`;
+    document.querySelectorAll('.seg button').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.lf) === execLF)));
+  }
+  document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => { execLF = Number(b.dataset.lf); renderExec(); }));
+  renderExec();
+
+  /* Årsverdi */
+  const AIRLINES = [
+    { id: 'nas', name: 'Norwegian', pax: 23.2, sa: 100, seats: 186, lf: 86 },
+    { id: 'sas', name: 'SAS', pax: 28.3, sa: 75, seats: 180, lf: 80 },
+  ];
+  const COMMON = { front: 50, turn: 85, gate: 17.78, delay: 100 };
+  const FIELDS = [
+    ['pax', 'Passasjerer per år (millioner)', 0.1], ['sa', 'Andel på fly med rundt 180 seter (%)', 1],
+    ['seats', 'Seter per fly', 1], ['lf', 'Kabinfaktor (%)', 1],
+  ];
+  const CFIELDS = [
+    ['front', 'Andel flyginger med bare fremre dør (%)', 1], ['turn', 'Andel ankomster der flyet snur videre (%)', 1],
+    ['gate', 'Kostnad ved gate (€ per minutt)', 0.01], ['delay', 'Kostnad per forsinkelsesminutt (€)', 1],
+  ];
+  const nf = (x, d = 0) => x.toLocaleString('nb-NO', { maximumFractionDigits: d, minimumFractionDigits: d });
+  const meur = (x) => nf(x / 1e6, 1) + ' mill. €';
+  function renderAirlines() {
+    $('airlines').innerHTML = AIRLINES.map((a) => {
+      const x = atLF(a.lf / 100);
+      const saveMin = (x.vanlig - x.forslag) / 60;
+      const flights = (a.pax * 1e6 * a.sa / 100) / (a.seats * a.lf / 100);
+      const frontFlights = flights * COMMON.front / 100;
+      const turnMin = frontFlights * saveMin * COMMON.turn / 100;
+      const paxHours = a.pax * 1e6 * a.sa / 100 * COMMON.front / 100 * (x.paxVanlig - x.paxForslag) / 3600;
+      return `<div class="airline"><h4>${a.name}</h4><dl>
+        <dt>Flyginger per år, anslått</dt><dd>${nf(flights)}</dd>
+        <dt>… med bare fremre dør</dt><dd>${nf(frontFlights)}</dd>
+        <dt>Spart per slik flyging</dt><dd>${nf(saveMin, 1)} min</dd>
+        <dt>Spart bakketid i snuoperasjoner</dt><dd>${nf(turnMin / 60)} flytimer</dd>
+        <dt>Verdi, kostnad ved gate</dt><dd class="big">${meur(turnMin * COMMON.gate)}</dd>
+        <dt>Verdi, om minuttene hindrer forsinkelser</dt><dd class="big">${meur(turnMin * COMMON.delay)}</dd>
+        <dt>Passasjertid spart</dt><dd>${nf(paxHours)} timer</dd>
+      </dl></div>`;
+    }).join('');
+  }
+  const assume = $('assume');
+  for (const a of AIRLINES) {
+    assume.insertAdjacentHTML('beforeend', `<div class="grp">${a.name}</div>` + FIELDS.map(([k, label, step]) =>
+      `<label for="as-${a.id}-${k}"><span>${label}</span><input type="number" id="as-${a.id}-${k}" step="${step}" value="${a[k]}"></label>`).join(''));
+  }
+  assume.insertAdjacentHTML('beforeend', '<div class="grp">Felles</div>' + CFIELDS.map(([k, label, step]) =>
+    `<label for="as-c-${k}"><span>${label}</span><input type="number" id="as-c-${k}" step="${step}" value="${COMMON[k]}"></label>`).join(''));
+  assume.addEventListener('input', (e) => {
+    const [, who, key] = e.target.id.split('-');
+    const v = Number(e.target.value);
+    if (!Number.isFinite(v) || v < 0) return;
+    if (who === 'c') COMMON[key] = v; else AIRLINES.find((a) => a.id === who)[key] = v;
+    renderAirlines();
+  });
+  renderAirlines();
+
+  /* ---------- Optimalisering ---------- */
+  const OPT = window.UTSTIGNING_OPTIMUM;
+  if (OPT) try {
+    $('opt-n').textContent = OPT.tested;
+    $('opt-fine').textContent = OPT.fineRuns;
+    $('opt-lb').textContent = fmtMin(OPT.lowerBound);
+    const FORSLAG = 'Ditt forslag: tre bølger med innfletting';
+    const bestOther = OPT.fine.find((c) => c.name !== FORSLAG);
+    const forslagO = OPT.fine.find((c) => c.name === FORSLAG);
+    const radO = OPT.fine.find((c) => c.name.startsWith('Vanlig praksis'));
+    if (!forslagO || !radO) throw new Error('optimum.js mangler referansereglene. Kjør node optimize.js på nytt.');
+    const rowsO = [
+      { name: 'Nedre grense', tag: 'Døra står aldri ledig', v: OPT.lowerBound },
+      { name: 'Beste regel funnet', tag: bestOther.name, v: bestOther.fine.median, r: bestOther.fine, scen: 'beste' },
+      { name: 'Ditt forslag', tag: 'Tre bølger med innfletting', v: forslagO.fine.median, r: forslagO.fine, mine: true, scen: 'forslag' },
+      { name: 'Vanlig praksis', tag: 'Alle går når de kan', v: radO.fine.median, r: radO.fine, scen: 'fritt' },
+    ];
+    const maxO = Math.ceil(Math.max(...rowsO.map((x) => (x.r ? x.r.p90 : x.v))) / 60 / 4) * 4;
+    const xp = (sec) => (sec / 60 / maxO) * 100;
+    let grid = '';
+    for (let m = 0; m <= maxO; m += 4) grid += `<i class="grid" style="left:${(m / maxO) * 100}%"></i>`;
+    $('opt-chart').innerHTML = rowsO.map((x) => `<div class="bar-row${x.mine ? ' mine' : ''}" style="cursor:default">
+      <span class="bar-head"><span class="bar-name">${x.name}<span class="bar-tag${x.mine ? ' mine' : ''}">${x.tag}</span></span><span class="bar-val">${fmt(x.v)}</span></span>
+      <span class="track">${grid}${x.r ? `<i class="range" style="left:${xp(x.r.p10)}%;width:${xp(x.r.p90) - xp(x.r.p10)}%"></i>` : ''}<i class="med" style="left:${xp(x.v)}%"></i></span>
+      ${x.scen ? `<button type="button" class="play-link" data-scen="${x.scen}">Se animasjonen</button>` : ''}</div>`).join('');
+    for (let m = 0; m <= maxO; m += 4) $('opt-axis').insertAdjacentHTML('beforeend', `<span style="left:${(m / maxO) * 100}%">${m}${m === maxO ? ' min' : ''}</span>`);
+    $('opt-behavior').innerHTML = '<thead><tr><th>Bagasjeatferd</th><th class="num">Ditt forslag</th><th class="num">Vanlig praksis</th></tr></thead><tbody>' +
+      OPT.behavior.map((b) => `<tr><td>${b.name}</td><td class="num">${fmt(b.forslag)}</td><td class="num">${fmt(b.vanlig)}</td></tr>`).join('') +
+      `<tr><td>Nedre grense</td><td class="num">${fmt(OPT.lowerBound)}</td><td class="num">${fmt(OPT.lowerBound)}</td></tr></tbody>`;
+    $('opt-top').innerHTML = '<thead><tr><th>Regel</th><th class="num">Median</th><th class="num">10–90 %</th></tr></thead><tbody>' +
+      OPT.fine.map((c) => `<tr><td>${c.name}</td><td class="num">${fmt(c.fine.median)}</td><td class="num">${fmt(c.fine.p10)}–${fmt(c.fine.p90)}</td></tr>`).join('') + '</tbody>';
+    const rob = OPT.robust;
+    const short = (c) => (c.name === FORSLAG ? 'Ditt forslag' : c.name.startsWith('Vanlig praksis') ? 'Vanlig praksis' : 'Nr. ' + (OPT.fine.findIndex((f) => f.name === c.name) + 1));
+    $('opt-robust').innerHTML = '<thead><tr><th>Atferd</th>' + rob.map((c) => `<th class="num">${short(c)}</th>`).join('') + '</tr></thead><tbody>' +
+      OPT.variants.map((v, i) => `<tr><td>${v}</td>` + rob.map((c) => `<td class="num">${fmt(c.robust[i].median)}</td>`).join('') + '</tr>').join('') + '</tbody>';
+  } catch (err) {
+    console.warn(err);
+    document.querySelector('[aria-labelledby="opt-h"]').hidden = true;
+  }
+
+  // «Se animasjonen»: velg scenariet, vis bare økonomi og hopp til animasjonen.
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('.play-link');
+    if (!b) return;
+    if (cabin !== 'okonomi') { cabin = 'okonomi'; cabSel.value = cabin; showDefaultChart(); }
+    select(b.dataset.scen);
+    document.querySelector('.sim-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
   showDefaultChart();
   select(location.hash.slice(1) || MINE, true);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (sim) draw(); });

@@ -24,7 +24,34 @@ for (const c of CABINS) {
   });
 }
 
-const payload = { generated: new Date().toISOString().slice(0, 10), runs, params: U.PARAMS, cabins: CABINS, results: cabins };
+// Sammendrag: vanlig praksis mot ditt forslag ved ulik kabinfaktor, og nedre grense.
+// Brukes til sammendraget og årsberegningen på nettsiden.
+const SUMMARY_RUNS = runs;
+const median = (xs) => { const s = xs.slice().sort((a, b) => a - b); return (s[(s.length - 1) >> 1] + s[s.length >> 1]) / 2; };
+const summary = [0.7, 0.75, 0.8, 0.86, 0.9, 1].map((lf) => {
+  const row = { loadFactor: lf };
+  for (const id of ['fritt', 'forslag']) {
+    const total = [], perPax = [];
+    for (let sd = 1; sd <= SUMMARY_RUNS; sd++) {
+      const sim = U.createSim(id, sd, { loadFactor: lf });
+      sim.run();
+      total.push(sim.t);
+      perPax.push(sim.agents.reduce((s, a) => s + a.exitT, 0) / sim.total);
+    }
+    row[id] = { median: median(total), paxMean: median(perPax) };
+  }
+  const lb = [], pax = [];
+  for (let sd = 1; sd <= SUMMARY_RUNS; sd++) {
+    const sim = U.createSim('fritt', sd, { loadFactor: lf });
+    lb.push(sim.agents.reduce((s, a) => s + a.walkT + U.PARAMS.doorTime, 0));
+    pax.push(sim.total);
+  }
+  row.lowerBound = median(lb); row.passengers = median(pax);
+  console.log(`Kabinfaktor ${lf}: vanlig ${(row.fritt.median / 60).toFixed(2)}, forslag ${(row.forslag.median / 60).toFixed(2)}, grense ${(row.lowerBound / 60).toFixed(2)} min`);
+  return row;
+});
+
+const payload = { summary, generated: new Date().toISOString().slice(0, 10), runs, params: U.PARAMS, cabins: CABINS, results: cabins };
 fs.writeFileSync(
   path.join(__dirname, 'results.js'),
   '// Generert av run.js. Ikke rediger for hånd.\nwindow.UTSTIGNING_RESULTS = ' + JSON.stringify(payload, null, 2) + ';\n'

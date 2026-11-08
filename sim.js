@@ -47,9 +47,10 @@
     otherRowShare: 0.3,    // andel med bagasjen i en annen rad enn sin egen
     impatientShare: 0.1,   // andel som går ut i midtgangen før det er deres tur
     preReadyShare: 0.7,    // andel på midtgangssetene som står klare med bagasjen når døra åpnes
-    mergeGap: 2,           // «klar bane»: så mange plasser bak i midtgangen må være tomme for å flette inn
+    mergeGap: 1,           // «klar bane»: så mange plasser bak i midtgangen må være tomme for å flette inn (1 var best i optimize.js)
     squeezeTime: 2.5,      // s å presse seg forbi én person i midtgangen
     backWinP: 0.3,         // sjanse for at en som skal bakover får en ledig plass før en som skal fremover
+    loadFactor: 1,         // andel solgte seter; tomme seter trekkes tilfeldig
     businessRows: 0,       // rader med business forrest (midtsetet står tomt der)
     businessFirst: false,  // business går først; forhenget holder økonomi tilbake til de er ute
     maxTime: 3600,
@@ -72,42 +73,61 @@
     { letter: 'F', side: 1, depth: 3, group: 'window' },
   ];
 
-  // waves: bølger midtgang -> midtsete -> vindu, der hver bølge venter til forrige er ute.
+  // Et scenario er enten rad for rad (kind 'rad'), fritt fram (kind 'fritt') eller en
+  // liste av grupper som slippes etter tur (groups). En gruppe skrives som setebokstaver,
+  // eventuelt med rader: 'CD' = midtgangssetene, 'CD@16-30' = midtgangssetene i rad 16–30,
+  // 'ABCDEF@odd' = alle seter i oddetallsrader.
+  // trigger: når neste gruppe slippes. Et tall er andelen av forrige gruppe som må være ute
+  //   av flyet (1 = alle), 'entered' betyr at alle i forrige gruppe har forlatt setet.
   // prep: de som venter, kan flytte seg inn mot midtgangen og ta ned bagasjen imens.
-  // merge: de som er klare, fletter inn når det er klar bane bak dem i midtgangen.
+  // merge: de som er klare, fletter inn når det er klar bane bak dem (true = PARAMS.mergeGap
+  //   tomme plasser, eller et tall).
+  const WAVE_LABELS = ['Bølge 1: midtgangsseter', 'Bølge 2: midtseter', 'Bølge 3: vindusseter'];
   const SCENARIOS = [
     {
       id: 'rad',
-      name: 'Rad for rad forfra',
-      short: 'Vanlig praksis',
-      desc: 'Hver rad venter på tur. Neste rad reiser seg når raden foran begynner å gå ut i midtgangen. De som alt står i midtgangen, går når køen beveger seg.',
+      name: 'Høflig rad for rad',
+      short: 'Rad for rad',
+      kind: 'rad',
+      desc: 'Slik det ville gått om alle var høflige. Hver rad venter på tur. Neste rad reiser seg når raden foran begynner å gå ut i midtgangen. De som alt står i midtgangen, går når køen beveger seg.',
     },
     {
       id: 'fritt',
-      name: 'Fritt fram',
-      short: 'Alle går når de vil',
-      desc: 'Alle prøver å komme seg ut i midtgangen så snart det er en ledig plass ved raden deres.',
+      name: 'Vanlig praksis: alle går når de kan',
+      short: 'Vanlig praksis',
+      kind: 'fritt',
+      desc: 'Slik det går for seg i dag: alle prøver å komme seg ut i midtgangen så snart det er en ledig plass ved raden deres.',
     },
     {
       id: 'bolger',
       name: 'Tre bølger, alle sitter til sin tur',
       short: 'Strenge bølger',
       desc: 'Først midtgangssetene, så midtsetene, så vindussetene. Hver bølge venter sittende til forrige bølge er helt ute, og går så ut i gangen og tar ned bagasjen samtidig.',
-      waves: true,
+      groups: ['CD', 'BE', 'AF'], labels: WAVE_LABELS,
     },
     {
       id: 'forslag-uten-innfletting',
       name: 'Tre bølger, gjør seg klare imens',
       short: 'Forslaget uten innfletting',
       desc: 'Som ditt forslag, men ingen går før bølgen sin. De som venter, flytter seg inn på det ledige setet mot midtgangen og tar ned bagasjen der.',
-      waves: true, prep: true,
+      groups: ['CD', 'BE', 'AF'], labels: WAVE_LABELS, prep: true,
     },
     {
       id: 'forslag',
       name: 'Tre bølger med innfletting',
       short: 'Ditt forslag',
       desc: 'Midtgangssetene går først. Imens flytter midt- og vinduspassasjerer seg inn på det ledige midtgangssetet og tar ned bagasjen. Er de klare og det er klar bane i midtgangen, går de ut. Ellers venter de. Når midtgangssetene er ute, går alle på midtsetet ut i gangen samtidig, og til slutt vindussetene.',
-      waves: true, prep: true, merge: true,
+      groups: ['CD', 'BE', 'AF'], labels: WAVE_LABELS, prep: true, merge: true,
+    },
+    {
+      id: 'beste',
+      name: 'Seks bølger, bakre halvdel først',
+      short: 'Beste regel funnet',
+      desc: 'Den raskeste regelen optimize.js fant, statistisk likt med ditt forslag. Som ditt forslag, men hver bølge deles i to: først rad 16–30, så rad 1–15. Neste bølge slippes når 75 % av forrige er ute, og de som er klare, fletter inn når plassen rett bak er tom.',
+      groups: ['CD@16-30', 'CD@1-15', 'BE@16-30', 'BE@1-15', 'AF@16-30', 'AF@1-15'],
+      labels: ['Bølge 1: midtgangsseter, rad 16–30', 'Bølge 2: midtgangsseter, rad 1–15', 'Bølge 3: midtseter, rad 16–30',
+        'Bølge 4: midtseter, rad 1–15', 'Bølge 5: vindusseter, rad 16–30', 'Bølge 6: vindusseter, rad 1–15'],
+      trigger: 0.75, prep: true, merge: true,
     },
   ];
 
@@ -126,10 +146,24 @@
     return median * Math.exp(sigma * z);
   }
 
+  function parseGroup(spec) {
+    const [letters, rows] = spec.split('@');
+    let test = () => true;
+    if (rows === 'odd') test = (row) => row % 2 === 1;
+    else if (rows === 'even') test = (row) => row % 2 === 0;
+    else if (rows) { const [lo, hi] = rows.split('-').map(Number); test = (row) => row >= lo && row <= hi; }
+    return { letters, rows: test };
+  }
+
   function createSim(scenarioId, seed, overrides) {
     const P = Object.assign({}, PARAMS, overrides || {});
-    const S = SCENARIOS.find((x) => x.id === scenarioId);
+    const S = typeof scenarioId === 'string' ? SCENARIOS.find((x) => x.id === scenarioId) : scenarioId;
     if (!S) throw new Error('Ukjent scenario: ' + scenarioId);
+    const kind = S.kind || 'groups';
+    const groups = kind === 'groups' ? S.groups.map(parseGroup) : [];
+    const G = groups.length;
+    const trigger = S.trigger === undefined ? 1 : S.trigger;
+    const mergeGap = S.merge === true ? P.mergeGap : (S.merge || 0);
     const r = mulberry32(seed >>> 0);
     const R = P.rows;
 
@@ -139,17 +173,20 @@
     const aisle = new Array(R + 1).fill(null);
     const rowLeft = new Int16Array(R + 2);      // personer i raden som ikke er i midtgangen ennå
     const rowEntered = new Int16Array(R + 2);   // personer fra raden som har gått ut i midtgangen
-    const groupTotal = { aisle: 0, middle: 0, window: 0 };
-    const groupLeft = { aisle: 0, middle: 0, window: 0 }; // ikke i midtgangen ennå
-    const groupOut = { aisle: 0, middle: 0, window: 0 };
+    const gTotal = new Int16Array(G + 1); // per gruppe: antall
+    const gLeft = new Int16Array(G + 1);  // ... som ikke har forlatt setet ennå
+    const gOut = new Int16Array(G + 1);   // ... som er ute av flyet
 
     // Passasjerene trekkes alltid med de samme tilfeldige tallene i samme rekkefølge,
     // så samme frø gir samme passasjerer i alle scenarier.
     const B = Math.max(0, Math.min(R - 1, P.businessRows | 0));
+    // Egen tallrekke for tomme seter, så resten av passasjerene blir like ved full kabin.
+    const rSeat = mulberry32((seed ^ 0x9e3779b9) >>> 0);
     for (let row = 1; row <= R; row++) {
       for (const s of SEATS) {
         const business = row <= B;
         if (business && s.group === 'middle') continue; // tomt midtsete på business
+        if (P.loadFactor < 1 && rSeat() >= P.loadFactor) continue; // usolgt sete
         const u = { bag: r(), slow: r(), slowF: r(), seatBag: r(), other: r(), which: r(), imp: r(), pre: r() };
         const bag = u.bag < P.bagShare;
         const slow = u.slow < P.slowShare;
@@ -173,11 +210,13 @@
           state: 'seated', go: false, standing: false,
           timer: 0, timerMax: 0, cell: -1, from: -1, exitT: null, enterT: null, partner: null,
         };
+        // Gruppe: første gruppe som passer. Business som går først, står utenfor gruppene.
+        a.gi = G === 0 || (business && P.businessFirst) ? G : groups.findIndex((g) => g.letters.includes(s.letter) && g.rows(row));
+        if (a.gi < 0) a.gi = G;
         agents.push(a);
         seatOcc[seatKey(row, s.side, s.depth)] = a;
         rowLeft[row]++;
-        groupTotal[s.group]++;
-        groupLeft[s.group]++;
+        gTotal[a.gi]++; gLeft[a.gi]++;
       }
     }
 
@@ -191,17 +230,23 @@
         seatOcc[seatKey(row, a.side, a.depth)] = null;
         aisle[row] = a;
         a.cell = row; a.from = row; a.depth = 0; a.enterT = 0; a.go = true; a.state = 'wait';
-        rowLeft[row]--; groupLeft[a.group]--; rowEntered[row]++;
+        rowLeft[row]--; gLeft[a.gi]--; rowEntered[row]++;
       }
     }
 
     const N = agents.length;
     const frontClear = new Uint8Array(R + 2);
     let t = 0, out = 0;
+    let relIdx = G > 0 ? 1 : 0; // antall grupper som er sluppet
 
     // Rad r får gå når alle rader før den forrige er ute av setene, og den forrige raden
     // har begynt å gå (én rads overlapp, slik folk gjør i praksis).
+    function groupDone(k) {
+      if (trigger === 'entered') return gLeft[k] === 0;
+      return gOut[k] >= Math.ceil(trigger * gTotal[k] - 1e-9);
+    }
     function computeClear() {
+      while (relIdx < G && groupDone(relIdx - 1)) relIdx++;
       frontClear[1] = 1;
       let doneBefore = 1;
       for (let row = 2; row <= R; row++) {
@@ -216,35 +261,31 @@
     function released(a) {
       if (a.impatient) return true;
       if (a.business && P.businessFirst) return true;
-      if (S.waves) {
-        if (a.group === 'aisle') return true;
-        if (a.group === 'middle') return groupOut.aisle === groupTotal.aisle;
-        return groupOut.aisle === groupTotal.aisle && groupOut.middle === groupTotal.middle;
-      }
-      if (scenarioId === 'rad') return frontClear[a.row] === 1;
+      if (kind === 'groups') return a.gi >= G || a.gi < relIdx;
+      if (kind === 'rad') return frontClear[a.row] === 1;
       return true;
     }
 
     // Klar til å flette inn: har bagasjen i hånda og står ved midtgangssetet.
     const prepared = (a) => a.seatBagger && a.bagLeft <= 0 && a.state === 'ready';
     function clearBehind(c) {
-      for (let k = 1; k <= P.mergeGap && c + k <= R; k++) if (aisle[c + k] !== null) return false;
+      for (let k = 1; k <= mergeGap && c + k <= R; k++) if (aisle[c + k] !== null) return false;
       return true;
     }
     function mayEnter(a, c) {
       if (a.state !== 'ready' || a.depth !== 1) return false;
       if (a.go) return true;
-      return !!S.merge && prepared(a) && clearBehind(c);
+      return mergeGap > 0 && prepared(a) && clearBehind(c);
     }
 
     function phase() {
       if (curtainClosed()) return 'Business går ut først. Økonomi gjør seg klar bak forhenget';
-      if (S.waves) {
-        if (groupOut.aisle < groupTotal.aisle) return 'Bølge 1: midtgangsseter' + (S.merge ? '. Klare fra andre seter fletter inn' : '');
-        if (groupOut.middle < groupTotal.middle) return 'Bølge 2: midtseter' + (S.merge ? '. Klare vinduspassasjerer fletter inn' : '');
-        return 'Bølge 3: vindusseter';
+      if (kind === 'groups') {
+        const k = Math.min(relIdx, G) - 1;
+        const label = S.labels ? S.labels[k] : `Gruppe ${k + 1} av ${G}: ${S.groups[k].replace('@', ', rad ')}`;
+        return label + (mergeGap > 0 && k < G - 1 ? '. Klare fra senere grupper fletter inn' : '');
       }
-      return scenarioId === 'rad' ? 'Rad for rad forfra' : 'Alle går når de kan';
+      return kind === 'rad' ? 'Rad for rad forfra' : 'Alle går når de kan';
     }
 
     function setTimer(a, s) { a.timer = s; a.timerMax = s; }
@@ -266,7 +307,7 @@
       aisle[c] = a;
       a.cell = c; a.from = c; a.depth = 0;
       a.enterT = t;
-      rowLeft[a.row]--; groupLeft[a.group]--;
+      rowLeft[a.row]--; gLeft[a.gi]--;
       rowEntered[a.row]++;
       arrive(a);
     }
@@ -348,7 +389,7 @@
             if (a.timer <= 0) {
               aisle[0] = null;
               a.state = 'out'; a.cell = -1; a.exitT = t;
-              out++; groupOut[a.group]++;
+              out++; gOut[a.gi]++;
               if (a.business) businessLeft--;
             }
             break;
