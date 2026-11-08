@@ -14,6 +14,9 @@
  * - Noen har kofferten en rad foran (plukker den opp på vei ut) eller en til to
  *   rader bak (går mot strømmen, presser seg forbi folk og blokkerer imens).
  *
+ * Valgfritt: business i de forreste radene med tomt midtsete. Skal business gå
+ * først, holder forhenget økonomi tilbake til siste businesspassasjer er ute.
+ *
  * Fungerer både i nettleseren (global `Utstigning`) og i Node (module.exports).
  */
 (function (root, factory) {
@@ -47,6 +50,8 @@
     mergeGap: 2,           // «klar bane»: så mange plasser bak i midtgangen må være tomme for å flette inn
     squeezeTime: 2.5,      // s å presse seg forbi én person i midtgangen
     backWinP: 0.3,         // sjanse for at en som skal bakover får en ledig plass før en som skal fremover
+    businessRows: 0,       // rader med business forrest (midtsetet står tomt der)
+    businessFirst: false,  // business går først; forhenget holder økonomi tilbake til de er ute
     maxTime: 3600,
   };
 
@@ -140,8 +145,11 @@
 
     // Passasjerene trekkes alltid med de samme tilfeldige tallene i samme rekkefølge,
     // så samme frø gir samme passasjerer i alle scenarier.
+    const B = Math.max(0, Math.min(R - 1, P.businessRows | 0));
     for (let row = 1; row <= R; row++) {
       for (const s of SEATS) {
+        const business = row <= B;
+        if (business && s.group === 'middle') continue; // tomt midtsete på business
         const u = { bag: r(), slow: r(), slowF: r(), seatBag: r(), other: r(), which: r(), imp: r(), pre: r() };
         const bag = u.bag < P.bagShare;
         const slow = u.slow < P.slowShare;
@@ -150,11 +158,12 @@
         if (bag && u.other < P.otherRowShare) {
           let acc = 0;
           for (const o of OTHER_ROW) { acc += o.share; if (u.which < acc) { bagRow = row + o.offset; break; } }
-          bagRow = Math.max(1, Math.min(R, bagRow));
+          // Bagasjen ligger i samme kabin: business foran forhenget, økonomi bak.
+          bagRow = business ? Math.max(1, Math.min(B, bagRow)) : Math.max(B + 1, Math.min(R, bagRow));
         }
         const bagT = (bag ? Math.min(P.bagMax, lognormal(r, P.bagMedian, P.bagSigma)) : uni(r, P.noBag)) * pace;
         const a = {
-          id: agents.length, row, merged: false, letter: s.letter, side: s.side, depth: s.depth, seatDepth: s.depth,
+          id: agents.length, row, merged: false, business, letter: s.letter, side: s.side, depth: s.depth, seatDepth: s.depth,
           group: s.group, bag, bagRow, bagT, bagLeft: bagT, needBag: true,
           // Tar ned bagasjen (eller samler jakke og ting) mens de står ved setet og venter.
           pace, slow, seatBagger: !bag || (bagRow === row && u.seatBag < P.seatBagShare),
@@ -201,8 +210,12 @@
       }
     }
 
+    let businessLeft = agents.filter((a) => a.business).length;
+    const curtainClosed = () => P.businessFirst && businessLeft > 0;
+
     function released(a) {
       if (a.impatient) return true;
+      if (a.business && P.businessFirst) return true;
       if (S.waves) {
         if (a.group === 'aisle') return true;
         if (a.group === 'middle') return groupOut.aisle === groupTotal.aisle;
@@ -225,6 +238,7 @@
     }
 
     function phase() {
+      if (curtainClosed()) return 'Business går ut først. Økonomi gjør seg klar bak forhenget';
       if (S.waves) {
         if (groupOut.aisle < groupTotal.aisle) return 'Bølge 1: midtgangsseter' + (S.merge ? '. Klare fra andre seter fletter inn' : '');
         if (groupOut.middle < groupTotal.middle) return 'Bølge 2: midtseter' + (S.merge ? '. Klare vinduspassasjerer fletter inn' : '');
@@ -335,6 +349,7 @@
               aisle[0] = null;
               a.state = 'out'; a.cell = -1; a.exitT = t;
               out++; groupOut[a.group]++;
+              if (a.business) businessLeft--;
             }
             break;
         }
@@ -356,7 +371,9 @@
         if (aisle[c] !== null) continue;
         const ahead = c >= 1 ? aisle[c - 1] : null;
         const behind = c + 1 <= R ? aisle[c + 1] : null;
-        const walker = behind && behind.state === 'wait' && behind.cell === c + 1 ? behind : null;
+        let walker = behind && behind.state === 'wait' && behind.cell === c + 1 ? behind : null;
+        // Forhenget: økonomi kommer ikke forbi rad B før business er ute.
+        if (walker && c <= B && !walker.business && curtainClosed()) walker = null;
         const backer = ahead && ahead.state === 'back' && ahead.cell === c - 1 ? ahead : null;
         let seatCand = null;
         if (c >= 1) {
@@ -379,6 +396,8 @@
       get t() { return t; },
       get out() { return out; },
       get total() { return N; },
+      get businessRows() { return B; },
+      get curtainClosed() { return curtainClosed(); },
       get done() { return out === N || t >= P.maxTime; },
       get phase() { return phase(); },
       step,

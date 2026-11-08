@@ -124,6 +124,8 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
 .dot.back { background: var(--muted); position: relative; }
 .dot.back::after { content: ""; position: absolute; left: 3px; top: 4px; border: 3px solid transparent; border-top: 4px solid var(--card); }
 .dot.slow { background: var(--muted); position: relative; }
+.curtain { width: 16px; height: 0; border-top: 2px dashed var(--signal); display: inline-block; }
+.sim-panel select.cabin-sel { font-weight: 500; font-size: 15px; padding: 8px 12px; }
 .dot.slow::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--card); }
 
 /* Atferd */
@@ -158,9 +160,11 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     <section class="sim-panel" aria-label="Animasjon">
       <label for="scen" class="sr">Scenario</label>
       <select id="scen"></select>
+      <label for="kabin" class="sr">Kabin</label>
+      <select id="kabin" class="cabin-sel"></select>
       <div class="readout">
         <div><div class="big" id="clock">0:00</div><div class="lbl">tid</div></div>
-        <div><div class="big" id="outcount">0</div><div class="lbl">av 180 ute</div></div>
+        <div><div class="big" id="outcount">0</div><div class="lbl">av <span id="total">180</span> ute</div></div>
         <button class="ctl primary" id="play" type="button">Pause</button>
       </div>
       <div class="phase" id="phase"></div>
@@ -183,6 +187,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
         <span><i class="dot ring"></i>Henter bagasje</span>
         <span><i class="dot back"></i>Går bakover etter koffert</span>
         <span><i class="dot slow"></i>Treg passasjer</span>
+        <span><i class="curtain"></i>Forheng, stengt til business er ute</span>
       </div>
     </section>
 
@@ -219,6 +224,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
           <li>Å gjøre seg klar uten å gå hjelper ikke i seg selv. Uten innfletting tar det <b data-med="forslag-uten-innfletting"></b>, litt tregere enn strenge bølger med <b data-med="bolger"></b>. Da fyller de som er klare midtgangen bakfra, og de som ikke er klare lenger fram, kommer ikke ut før strømmen har passert. Når de så tar ned bagasjen midt i strømmen, stopper alle bak.</li>
           <li>Det at alle i en bølge går ut i gangen og henter bagasjen samtidig, slik du beskrev, er effektivt. Det er derfor også strenge bølger slår både vanlig praksis og fritt fram (<b data-med="fritt"></b>).</li>
           <li>Forslaget er raskest i alle variantene vi prøvde, med 8–9 minutter: når bare halvparten er klare ved landing, når mange har kofferten i en annen rad, når det er mange trege, og når folk sjelden eller ofte slipper hverandre inn.</li>
+          <li>Business i rad 1–4 med tomt midtsete gir 172 passasjerer. Følger business samme regler som resten, tar ditt forslag <b data-med="business:forslag"></b>. Skal business gå først, tar det <b data-med="business-forst:forslag"></b>. Fortrinnet koster altså rundt et halvt minutt, fordi forhenget stopper økonomi mens business går. Business selv er ute etter under ett minutt. For vanlig praksis koster fortrinnet nesten ingenting (<b data-med="business:rad"></b> mot <b data-med="business-forst:rad"></b>), siden business uansett sitter forrest.</li>
           <li>Hvor streng «klar bane» er, betyr lite. Krever vi én tom plass bak, tar det 7,9 minutter. Krever vi fire, tar det 8,8.</li>
         </ul>
       </section>
@@ -249,13 +255,20 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
   const U = window.Utstigning;
   const RES = window.UTSTIGNING_RESULTS;
   const MINE = 'forslag';
-  const byId = Object.fromEntries(RES.results.map((r) => [r.id, r]));
+  const CABINS = RES.cabins;
+  const resultsFor = (cabinId) => Object.fromEntries(RES.results[cabinId].map((r) => [r.id, r]));
+  const byId = resultsFor('okonomi');
+  let cabin = 'okonomi';
+  const cabinDef = () => CABINS.find((c) => c.id === cabin);
   const fmt = (s) => { const m = Math.floor(s / 60), x = Math.floor(s % 60); return m + ':' + String(x).padStart(2, '0'); };
   const fmtMin = (s) => (s / 60).toFixed(1).replace('.', ',') + ' min';
   const $ = (id) => document.getElementById(id);
 
   document.querySelectorAll('[data-runs]').forEach((el) => { el.textContent = RES.runs; });
-  document.querySelectorAll('[data-med]').forEach((el) => { el.textContent = fmtMin(byId[el.dataset.med].median); });
+  document.querySelectorAll('[data-med]').forEach((el) => {
+    const [cab, id] = el.dataset.med.includes(':') ? el.dataset.med.split(':') : ['okonomi', el.dataset.med];
+    el.textContent = fmtMin(resultsFor(cab)[id].median);
+  });
 
   /* ---------- Resultatgraf ---------- */
   const chart = $('chart');
@@ -291,7 +304,8 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     const src = $('chart-src');
     src.textContent = srcText; src.classList.toggle('custom', !!custom);
   }
-  const DEFAULT_SRC = `Standardinnstillinger, ${RES.runs} flyginger per scenario.`;
+  const srcText = (runs, custom) => `${cabinDef().name}. ${custom ? 'Dine innstillinger' : 'Standardinnstillinger'}, ${runs} flyginger per scenario.`;
+  const showDefaultChart = () => renderChart(resultsFor(cabin), srcText(RES.runs, false), false);
 
   /* ---------- Atferd ---------- */
   const P = RES.params;
@@ -322,6 +336,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     return o;
   }
   let lastRunKey = '{}';
+  const simOverrides = () => Object.assign({}, cabinDef().overrides, behavior);
   slidersEl.addEventListener('input', () => {
     behavior = readBehavior();
     const key = JSON.stringify(behavior);
@@ -331,7 +346,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
   $('defaults').addEventListener('click', () => {
     for (const d of SLIDERS) $('s-' + d.key).value = Math.round(P[d.key] * 100);
     behavior = readBehavior(); lastRunKey = '{}';
-    renderChart(byId, DEFAULT_SRC, false);
+    showDefaultChart();
     $('run-status').textContent = '';
     reset();
   });
@@ -341,7 +356,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     if (running) return;
     running = true;
     const btn = $('rerun'); btn.disabled = true;
-    const ov = Object.assign({}, behavior), key = JSON.stringify(ov);
+    const ov = simOverrides(), key = JSON.stringify(behavior);
     const times = Object.fromEntries(U.SCENARIOS.map((s) => [s.id, []]));
     const jobs = [];
     for (const s of U.SCENARIOS) for (let i = 0; i < RERUNS; i++) jobs.push([s.id, 1 + i]);
@@ -353,7 +368,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
       if (j < jobs.length) { setTimeout(chunk, 0); return; }
       const res = Object.fromEntries(U.SCENARIOS.map((s) => [s.id, U.stats(s.id, times[s.id])]));
       const isDefault = key === '{}';
-      renderChart(res, isDefault ? `Standardinnstillinger, ${RERUNS} flyginger per scenario.` : `Dine innstillinger, ${RERUNS} flyginger per scenario.`, !isDefault);
+      renderChart(res, srcText(RERUNS, !isDefault), !isDefault);
       lastRunKey = key;
       $('run-status').textContent = 'Ferdig. Grafen viser innstillingene over.';
       btn.disabled = false; running = false;
@@ -435,12 +450,29 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     // Seter og radnummer
     const sw = c * 0.8, sh = Math.max(8, geo.rowH * 0.8);
     ctx.fillStyle = colors.seat;
+    const B = sim ? sim.businessRows : 0;
     for (let row = 1; row <= R; row++) {
       const y = rowY(row);
       for (const s of U.SEATS) {
         const x = seatX(s.side, s.depth);
+        if (row <= B && s.depth === 2) {
+          // Tomt midtsete på business: lite bord mellom setene
+          ctx.fillStyle = colors.line; roundRect(x - sw * 0.25, y - sh * 0.3, sw * 0.5, sh * 0.6, 2); ctx.fill();
+          ctx.fillStyle = colors.seat;
+          continue;
+        }
         roundRect(x - sw / 2, y - sh / 2, sw, sh, 3); ctx.fill();
       }
+    }
+    if (B > 0) {
+      // Forhenget mellom business og økonomi
+      const yc = (rowY(B) + rowY(B + 1)) / 2;
+      const closed = sim.curtainClosed;
+      ctx.save();
+      ctx.setLineDash(closed ? [5, 3] : [2, 4]);
+      ctx.strokeStyle = closed ? colors.signal : colors.line; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(L + 2, yc); ctx.lineTo(Rt - 2, yc); ctx.stroke();
+      ctx.restore();
     }
     ctx.fillStyle = colors.muted;
     ctx.font = `500 ${Math.max(8, Math.min(11, Math.round(geo.rowH * 0.5)))}px ${css('--font-data') || 'monospace'}`;
@@ -520,13 +552,13 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     $('outcount').textContent = sim.out;
     const ph = $('phase');
     if (sim.done) {
-      ph.textContent = `Alle ute etter ${fmt(sim.t)}. Median over ${RES.runs} flyginger: ${fmt(byId[scenario].median)}.`;
+      ph.textContent = `Alle ute etter ${fmt(sim.t)}. Median i grafen: ${fmt(current[scenario].median)}.`;
       ph.classList.add('done');
     } else { ph.textContent = sim.phase; ph.classList.remove('done'); }
     $('play').textContent = sim.done ? 'Spill av igjen' : playing ? 'Pause' : 'Spill av';
   }
 
-  function reset() { sim = U.createSim(scenario, seed, behavior); lastTs = null; draw(); updateReadout(); }
+  function reset() { sim = U.createSim(scenario, seed, simOverrides()); $('total').textContent = sim.total; lastTs = null; draw(); updateReadout(); }
 
   function select(id, fromHash) {
     if (!byId[id]) id = MINE;
@@ -574,7 +606,15 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
 
   readColors();
   layout();
-  renderChart(byId, DEFAULT_SRC, false);
+  const cabSel = $('kabin');
+  for (const c of CABINS) cabSel.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name}</option>`);
+  cabSel.addEventListener('change', () => {
+    cabin = cabSel.value;
+    showDefaultChart(); lastRunKey = '{}';
+    $('run-status').textContent = JSON.stringify(behavior) === '{}' ? '' : 'Grafen viser ikke disse innstillingene ennå.';
+    reset();
+  });
+  showDefaultChart();
   select(location.hash.slice(1) || MINE, true);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (sim) draw(); });
   requestAnimationFrame(frame);

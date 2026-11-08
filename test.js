@@ -75,3 +75,21 @@ test('midtgangen har aldri to personer i samme celle', () => {
     assert.strictEqual(new Set(cells).size, cells.length);
   }
 });
+
+test('business: tomt midtsete i rad 1–4 gir 172 passasjerer', () => {
+  const sim = U.createSim('rad', 1, { businessRows: 4 });
+  assert.strictEqual(sim.total, 172);
+  assert.ok(!sim.agents.some((a) => a.business && a.group === 'middle'));
+  assert.ok(sim.agents.filter((a) => a.business).every((a) => a.bagRow <= 4));
+  assert.ok(sim.agents.filter((a) => !a.business).every((a) => a.bagRow > 4));
+});
+
+test('business først: ingen fra økonomi går ut før siste businesspassasjer er ute', () => {
+  for (const s of U.SCENARIOS) {
+    const sim = U.createSim(s.id, 6, { businessRows: 4, businessFirst: true, impatientShare: 0.3 });
+    sim.run();
+    assert.strictEqual(sim.out, 172, s.id);
+    const lastBusiness = Math.max(...sim.agents.filter((a) => a.business).map((a) => a.exitT));
+    for (const a of sim.agents.filter((x) => !x.business)) assert.ok(a.exitT > lastBusiness, s.id);
+  }
+});

@@ -16,6 +16,12 @@ setet sitt.
 | Tre bølger, gjør seg klare imens | Som over, men de som venter, flytter seg inn på det ledige setet mot midtgangen og tar ned bagasjen der. |
 | Tre bølger med innfletting (forslaget) | Som over, og de som er klare, går før tur når det er klar bane: de to plassene bak dem i midtgangen er tomme. |
 
+Hvert scenario kjøres i tre kabiner:
+
+- **Bare økonomi:** 180 passasjerer.
+- **Business i rad 1–4:** midtsetet står tomt, så det er 172 passasjerer. Business følger samme regler som resten.
+- **Business i rad 1–4 går først:** forhenget bak rad 4 holder økonomi tilbake til siste businesspassasjer er ute. Økonomi kan imens reise seg og ta ned bagasjen bak forhenget.
+
 ## Kjøre
 
 Krever Node 18 eller nyere. Ingen avhengigheter.
