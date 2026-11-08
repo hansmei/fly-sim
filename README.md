@@ -1,17 +1,20 @@
 # Utstigning fra Boeing 737
 
 Simulering av hvor fort 180 passasjerer kommer seg ut av en full Boeing 737-800
-når bare fremre venstre dør (1L) er åpen. Seks måter å be folk gå ut på
+når bare fremre venstre dør (1L) er åpen. Fem måter å be folk gå ut på
 sammenlignes, og hver kjøres 200 ganger med ulike passasjerer og ulik bagasje.
+
+Alle scenariene starter likt: når døra åpnes, står 70 % av dem på
+midtgangssetene klare med bagasjen. Én per rad står i midtgangen, den andre ved
+setet sitt.
 
 | Scenario | Regel |
 |---|---|
 | Rad for rad forfra | Vanlig praksis. Neste rad reiser seg når raden foran begynner å gå. |
 | Fritt fram | Alle går ut i midtgangen så snart det er ledig ved raden deres. |
-| Midtgangsseter først, så resten bakfra | Midtgangssetene (C, D) går ut. Midt- og vindusseter venter til den siste av dem er ute av flyet, og tømmes så rad for rad bakfra. |
-| Midtgangsseter først, så resten forfra | Som over, men fase 2 går forfra. |
-| Midtgangsseter først, resten bakfra uten pause | Fase 2 starter når midtgangssetene har kommet ut i midtgangen, ikke når de er ute av flyet. |
-| Tre bølger | Midtgangsseter, så midtseter, så vindusseter. Hver bølge går fritt og venter til forrige bølge er ute. |
+| Tre bølger, alle sitter til sin tur | Midtgangsseter, så midtseter, så vindusseter. Hver bølge venter sittende til forrige er ute, og går så ut i gangen og tar ned bagasjen samtidig. |
+| Tre bølger, gjør seg klare imens | Som over, men de som venter, flytter seg inn på det ledige setet mot midtgangen og tar ned bagasjen der. |
+| Tre bølger med innfletting (forslaget) | Som over, og de som er klare, går før tur når det er klar bane: de to plassene bak dem i midtgangen er tomme. |
 
 ## Kjøre
 
@@ -37,10 +40,11 @@ npm run sim    # kjører 200 flyginger per scenario og skriver results.js
 Midtgangen er delt i én plass per rad pluss byssa ved døra, med plass til én
 person per plass. Passasjerene reiser seg, flytter seg sidelengs mot midtgangen,
 henter bagasjen stående i midtgangen og går mot døra. Den som står ved
-midtgangssetet og venter, kan begynne å ta ned bagasjen, men saktere. Alle
-tidene står i `PARAMS` øverst i `sim.js`.
+midtgangssetet og venter, kan begynne å ta ned bagasjen, men saktere. Hver passasjer har sitt eget tempo, og noen er trege. Noen har kofferten en rad
+foran eller en til to rader bak, og må gå mot strømmen og presse seg forbi folk
+for å hente den. Noen er utålmodige og bryter rekkefølgen. Alle tidene og
+andelene står i `PARAMS` øverst i `sim.js`.
 
 Tallene er anslag og ikke målt i et ekte fly, så de absolutte tidene er
-usikre. Rekkefølgen mellom scenariene holder seg når bagasjeandel,
-bagasjetid, fart gjennom døra og hvor ofte folk slipper andre foran seg endres.
-Tre bølger var raskest i alle variantene.
+usikre. Forslaget med innfletting var raskest i alle
+variantene vi prøvde, med 8–9 minutter mot rundt 13 for vanlig praksis.

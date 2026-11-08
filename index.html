@@ -151,7 +151,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
   <header>
     <div class="eyebrow">Boeing 737-800 · 180 passasjerer · bare dør 1L åpen</div>
     <h1>Hvor fort kommer alle ut?</h1>
-    <p class="lede">Seks måter å be passasjerene gå ut på, simulert <span data-runs>200</span> ganger hver med ulike passasjerer og ulik bagasje. Trykk på et scenario for å se det skje.</p>
+    <p class="lede">Fem måter å be passasjerene gå ut på, simulert <span data-runs>200</span> ganger hver med ulike passasjerer og ulik bagasje. Trykk på et scenario for å se det skje.</p>
   </header>
 
   <div class="cols">
@@ -211,16 +211,15 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
       </section>
 
       <section aria-labelledby="find-h" class="prose">
-        <h2 id="find-h">Hva skjer med ditt forslag?</h2>
+        <h2 id="find-h">Hva gir ditt forslag?</h2>
         <p class="sub">Tallene her er med standardinnstillingene.</p>
         <ul>
-          <li>Ditt forslag tar <b data-med="midtgang-bakfra"></b>, mot <b data-med="rad"></b> for vanlig praksis. Det er nesten likt.</li>
-          <li>Fase 1 går fort. Alle på midtgangssetene står i hver sin rad og tar ned bagasjen samtidig, i stedet for å vente på tur.</li>
-          <li>Fase 2 gir bort gevinsten. Rad for rad betyr at bare én eller to rader henter bagasje om gangen igjen, og bakfra betyr at de bakerste må gå forbi alle de som venter. Tømmes resten forfra, tar det <b data-med="midtgang-forfra"></b>.</li>
-          <li>Pausen mens fase 1 går ut døra koster også litt. Starter fase 2 med en gang midtgangssetene har kommet seg ut i midtgangen, tar det <b data-med="midtgang-overlapp"></b>.</li>
-          <li>Det raskeste er tre bølger der hver bølge går fritt: midtgangsseter, så midtseter, så vindusseter. Det tar <b data-med="bolger"></b>. Da tar mange ned bagasjen samtidig i hver bølge.</li>
-          <li>Det som gjør alt tregere, er kofferter i en annen rad, trege passasjerer og at få tar ned bagasjen mens de venter ved setet. Hver av dem legger til to til tre minutter. Noen få utålmodige betyr nesten ingenting.</li>
-          <li>Hovedlærdommen: det som går tregt, er bagasjen, ikke gåingen. Regler som lar mange hente bagasje samtidig og bruker hele midtgangen, slår regler som går rad for rad.</li>
+          <li>Ditt forslag tar <b data-med="forslag"></b>, mot <b data-med="rad"></b> for vanlig praksis. Det er rundt en tredel raskere, og raskest av alle scenariene.</li>
+          <li>Gevinsten kommer fra innflettingen. Mens bølge 1 går ut, er det ledig plass i midtgangen og døra. Midt- og vinduspassasjerer som har tatt ned bagasjen ved det ledige midtgangssetet, bruker den plassen i stedet for å vente.</li>
+          <li>Å gjøre seg klar uten å gå hjelper ikke i seg selv. Uten innfletting tar det <b data-med="forslag-uten-innfletting"></b>, litt tregere enn strenge bølger med <b data-med="bolger"></b>. Da fyller de som er klare midtgangen bakfra, og de som ikke er klare lenger fram, kommer ikke ut før strømmen har passert. Når de så tar ned bagasjen midt i strømmen, stopper alle bak.</li>
+          <li>Det at alle i en bølge går ut i gangen og henter bagasjen samtidig, slik du beskrev, er effektivt. Det er derfor også strenge bølger slår både vanlig praksis og fritt fram (<b data-med="fritt"></b>).</li>
+          <li>Forslaget er raskest i alle variantene vi prøvde, med 8–9 minutter: når bare halvparten er klare ved landing, når mange har kofferten i en annen rad, når det er mange trege, og når folk sjelden eller ofte slipper hverandre inn.</li>
+          <li>Hvor streng «klar bane» er, betyr lite. Krever vi én tom plass bak, tar det 7,9 minutter. Krever vi fire, tar det 8,8.</li>
         </ul>
       </section>
 
@@ -228,6 +227,8 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
         <h2 id="mod-h">Slik er modellen bygd</h2>
         <p>Midtgangen er delt i én plass per rad, pluss byssa ved døra. Det er plass til én person per plass. Passasjerene reiser seg, flytter seg sidelengs mot midtgangen og går mot døra. Når en plass blir ledig og flere vil inn, er det tilfeldig hvem som får den.</p>
         <ul>
+          <li>Når døra åpnes, står 70 % av dem på midtgangssetene klare med bagasjen. Én per rad står i midtgangen, den andre ved setet sitt.</li>
+          <li>I ditt forslag kan midt- og vinduspassasjerer flytte seg inn mot midtgangen og ta ned bagasjen før det er deres tur. De går ut før tur bare når de er klare og de to plassene bak dem i midtgangen er tomme. Det er det modellen kaller klar bane.</li>
           <li>Hver passasjer har sitt eget tempo. De trege bruker lengre tid på alt: å reise seg, flytte seg, ta ned bagasjen og gå.</li>
           <li>Noen tar ned bagasjen mens de venter. Det kan de gjøre stående ved midtgangssetet eller i midtsetet når det er ledig, men saktere enn fra midtgangen.</li>
           <li>Den som har kofferten i en annen rad, henter den der. Ligger den foran, plukker de den opp på vei ut. Ligger den bak, går de mot strømmen og presser seg forbi dem som er på vei ut. Mens de tar den ned, står de i midtgangen og stenger for alle bak.</li>
@@ -247,7 +248,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
   'use strict';
   const U = window.Utstigning;
   const RES = window.UTSTIGNING_RESULTS;
-  const MINE = 'midtgang-bakfra';
+  const MINE = 'forslag';
   const byId = Object.fromEntries(RES.results.map((r) => [r.id, r]));
   const fmt = (s) => { const m = Math.floor(s / 60), x = Math.floor(s % 60); return m + ':' + String(x).padStart(2, '0'); };
   const fmtMin = (s) => (s / 60).toFixed(1).replace('.', ',') + ' min';
@@ -295,6 +296,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
   /* ---------- Atferd ---------- */
   const P = RES.params;
   const SLIDERS = [
+    { key: 'preReadyShare', label: 'Klare med bagasjen når døra åpnes', hint: 'Av dem på midtgangssetene. De står i midtgangen eller ved setet sitt.', max: 100, step: 10 },
     { key: 'impatientShare', label: 'Utålmodige som går før tur', hint: 'Bryter rekkefølgen og går ut i midtgangen så snart det er plass.', max: 50, step: 5 },
     { key: 'seatBagShare', label: 'Tar ned bagasjen fra setet mens de venter', hint: 'Står ved midtgangssetet eller i et ledig midtsete.', max: 100, step: 10 },
     { key: 'otherRowShare', label: 'Har kofferten i en annen rad', hint: 'Av dem med bagasje. Tre av åtte foran, resten en til to rader bak.', max: 80, step: 10 },
@@ -369,6 +371,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     ['Hente bagasje, median', `${P.bagMedian} s (maks ${P.bagMax} s)`],
     ['Hente bagasje fra midtgangssetet / midtsetet', `${pct(P.seatBagRate[0])} / ${pct(P.seatBagRate[1])} av farten`],
     ['Uten hyllebagasje', `${P.noBag[0]}–${P.noBag[1]} s`],
+    ['Klar bane for å flette inn', `${P.mergeGap} tomme plasser bak`],
     ['Presse seg forbi én person', `${num(P.squeezeTime)} s`],
     ['Fra byssa og ut døra', `${num(P.doorTime)} s`],
     ['Spredning i tempo for vanlige passasjerer', `± ${pct(P.paceSigma)}`],

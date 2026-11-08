@@ -17,22 +17,39 @@ test('samme frø gir samme resultat', () => {
   assert.strictEqual(U.createSim('fritt', 3).run(), U.createSim('fritt', 3).run());
 });
 
-test('ditt forslag uten utålmodige: ingen midt- eller vindusseter går før siste midtgangssete er ute', () => {
-  const sim = U.createSim('midtgang-bakfra', 11, { impatientShare: 0 });
+test('når døra åpnes, står de klare på midtgangssetene i midtgangen, maks én per rad', () => {
+  const sim = U.createSim('rad', 9);
+  const inAisle = sim.agents.filter((a) => a.cell > 0);
+  assert.ok(inAisle.length > 15 && inAisle.length <= U.PARAMS.rows);
+  assert.strictEqual(new Set(inAisle.map((a) => a.cell)).size, inAisle.length);
+  for (const a of inAisle) assert.ok(a.group === 'aisle' && a.preReady && !a.needBag);
+});
+
+test('strenge bølger uten utålmodige: ingen midtsete går før siste midtgangssete er ute', () => {
+  const sim = U.createSim('bolger', 11, { impatientShare: 0 });
   sim.run();
   const lastAisleOut = Math.max(...sim.agents.filter((a) => a.group === 'aisle').map((a) => a.exitT));
   for (const a of sim.agents.filter((x) => x.group !== 'aisle')) assert.ok(a.enterT > lastAisleOut);
 });
 
-test('ditt forslag uten utålmodige: fase 2 går bakfra', () => {
-  const sim = U.createSim('midtgang-bakfra', 5, { impatientShare: 0 });
+test('ditt forslag: de som går før bølgen sin, har bagasjen klar og fletter inn', () => {
+  const sim = U.createSim('forslag', 11, { impatientShare: 0 });
   sim.run();
-  const firstEnter = (row) => Math.min(...sim.agents.filter((a) => a.row === row && a.group !== 'aisle').map((a) => a.enterT));
-  for (let row = 1; row < U.PARAMS.rows; row++) assert.ok(firstEnter(row) >= firstEnter(row + 1), 'rad ' + row);
+  const merged = sim.agents.filter((a) => a.merged);
+  assert.ok(merged.length > 10);
+  for (const a of merged) { assert.ok(a.seatBagger); assert.strictEqual(a.needBag, false); }
+  const lastAisleOut = Math.max(...sim.agents.filter((a) => a.group === 'aisle').map((a) => a.exitT));
+  for (const a of sim.agents.filter((x) => x.group !== 'aisle' && x.enterT < lastAisleOut)) assert.ok(a.merged);
+});
+
+test('uten innfletting går ingen før bølgen sin', () => {
+  const sim = U.createSim('forslag-uten-innfletting', 11, { impatientShare: 0 });
+  sim.run();
+  assert.strictEqual(sim.agents.filter((a) => a.merged).length, 0);
 });
 
 test('utålmodige går før tur', () => {
-  const sim = U.createSim('midtgang-bakfra', 5, { impatientShare: 0.2 });
+  const sim = U.createSim('bolger', 5, { impatientShare: 0.2 });
   sim.run();
   const lastAisleOut = Math.max(...sim.agents.filter((a) => a.group === 'aisle').map((a) => a.exitT));
   assert.ok(sim.agents.some((a) => a.group !== 'aisle' && a.impatient && a.enterT < lastAisleOut));
@@ -40,7 +57,7 @@ test('utålmodige går før tur', () => {
 
 test('de som har kofferten bak seg går bakover og henter den', () => {
   const sim = U.createSim('fritt', 4, { otherRowShare: 0.5 });
-  const backers = sim.agents.filter((a) => a.bagRow > a.row);
+  const backers = sim.agents.filter((a) => a.bagRow > a.row && !a.preReady);
   assert.ok(backers.length > 0);
   const maxCell = new Map();
   while (!sim.done) {
