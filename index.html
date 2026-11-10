@@ -233,7 +233,7 @@ tr.mine td:first-child { color: var(--signal); font-weight: 600; }
       <ol class="steps">
         <li><span><b>Før døra åpnes</b> står passasjerene på midtgangssetene klare med bagasjen. Rundt 70 % gjør dette allerede i dag.</span></li>
         <li><span><b>Bølge 1: midtgangssetene går.</b> Imens flytter midt- og vinduspassasjerer seg inn på det ledige setet og tar ned bagasjen der.</span></li>
-        <li><span><b>Den som er klar, fletter inn</b> når plassen rett bak i midtgangen er tom. Ellers venter de.</span></li>
+        <li><span><b>Den som er klar, fletter inn</b> når plassen rett bak i midtgangen er tom. Er gangen helt tom bak raden, går man uansett. Ellers venter man.</span></li>
         <li><span><b>Bølge 2 og 3:</b> midtsetene går ut i gangen samtidig, så vindussetene.</span></li>
       </ol>
       <p class="note">Kabinpersonalet må annonsere bølgene tydelig og holde igjen dem som ikke er klare. Det bør prøves på noen ruter først for å se hvor godt passasjerene følger det.</p>
@@ -242,7 +242,7 @@ tr.mine td:first-child { color: var(--signal); font-weight: 600; }
 
     <div class="exec-block span">
       <h3>Hva det er verdt i året</h3>
-      <p class="note">Gevinsten gjelder flyginger der passasjerene bare går ut gjennom fremre dør, typisk ved gate med én bro. Tiden som spares i snuoperasjonen, er verdsatt på to måter: hva flyet koster når det står ved gate, og hva et forsinkelsesminutt koster i snitt. Det siste gjelder bare minutter som faktisk hindrer forsinkelser, så den sanne verdien ligger trolig mellom.</p>
+      <p class="note">Gevinsten er forskjellen mellom vanlig praksis og ditt forslag, med samme dør. Halvparten av flygingene antas å bruke bare fremre dør, typisk ved gate med én bro. Resten får bakre dør åpnet etter 1 minutt, typisk med trapp. Begge deler kan endres. Tiden som spares i snuoperasjonen, er verdsatt på to måter: hva flyet koster når det står ved gate, og hva et forsinkelsesminutt koster i snitt. Det siste gjelder bare minutter som faktisk hindrer forsinkelser, så den sanne verdien ligger trolig mellom.</p>
       <div class="airlines" id="airlines"></div>
       <details>
         <summary>Endre forutsetningene</summary>
@@ -332,13 +332,13 @@ tr.mine td:first-child { color: var(--signal); font-weight: 600; }
         <h2 id="find-h">Hva gir ditt forslag?</h2>
         <p class="sub">Tallene her er med standardinnstillingene.</p>
         <ul>
-          <li>Ditt forslag tar <b data-med="forslag"></b>, mot <b data-med="fritt"></b> for vanlig praksis, der alle går når de kan. Det er rundt en tredel raskere, og like raskt som den beste regelen søket fant (<b data-med="beste"></b>).</li>
+          <li>Ditt forslag tar <b data-med="forslag"></b>, mot <b data-med="fritt"></b> for vanlig praksis, der alle går når de kan. Det er rundt en tredel raskere, og nesten like raskt som den beste regelen søket fant (<b data-med="beste"></b>).</li>
           <li>Gevinsten kommer fra innflettingen. Mens bølge 1 går ut, er det ledig plass i midtgangen og døra. Midt- og vinduspassasjerer som har tatt ned bagasjen ved det ledige midtgangssetet, bruker den plassen i stedet for å vente.</li>
           <li>Å gjøre seg klar uten å gå hjelper ikke i seg selv. Uten innfletting tar det <b data-med="forslag-uten-innfletting"></b>, litt tregere enn strenge bølger med <b data-med="bolger"></b>. Da fyller de som er klare midtgangen bakfra, og de som ikke er klare lenger fram, kommer ikke ut før strømmen har passert. Når de så tar ned bagasjen midt i strømmen, stopper alle bak.</li>
           <li>Det at alle i en bølge går ut i gangen og henter bagasjen samtidig, slik du beskrev, er effektivt. Det er derfor også strenge bølger slår både vanlig praksis og høflig rad for rad (<b data-med="rad"></b>).</li>
           <li>Forslaget holder seg på 8–9 minutter i alle variantene vi prøvde: når bare halvparten er klare ved landing, når mange har kofferten i en annen rad, når det er mange trege, og når folk sjelden eller ofte slipper hverandre inn.</li>
           <li>Business i rad 1–4 med tomt midtsete gir 172 passasjerer. Følger business samme regler som resten, tar ditt forslag <b data-med="business:forslag"></b>. Skal business gå først, tar det <b data-med="business-forst:forslag"></b>. Fortrinnet koster altså drøyt et halvt minutt, fordi forhenget stopper økonomi mens business går. Business selv er ute etter under ett minutt. For vanlig praksis koster fortrinnet nesten ingenting (<b data-med="business:fritt"></b> mot <b data-med="business-forst:fritt"></b>), siden business uansett sitter forrest.</li>
-          <li>Hvor streng «klar bane» er, betyr lite. Krever vi én tom plass bak, tar det 8,1 minutter. Krever vi fire, tar det 8,7.</li>
+          <li>Hvor streng «klar bane» er, betyr lite. Krever vi én tom plass bak, tar det 8,1 minutter. Krever vi fire, tar det 8,8.</li>
         </ul>
       </section>
 
@@ -369,6 +369,7 @@ tr.mine td:first-child { color: var(--signal); font-weight: 600; }
         <p>Midtgangen er delt i én plass per rad, pluss byssa ved døra. Det er plass til én person per plass. Passasjerene reiser seg, flytter seg sidelengs mot midtgangen og går mot døra. Når en plass blir ledig og flere vil inn, er det tilfeldig hvem som får den.</p>
         <ul>
           <li>Når døra åpnes, står 70 % av dem på midtgangssetene klare med bagasjen. Én per rad står i midtgangen, den andre ved setet sitt.</li>
+          <li>Ledig gang: i høflig rad for rad, ditt forslag og den beste regelen går man uten å vente på tur når midtgangen ved raden og hele veien bakover er tom, og ingen bak er på vei ut. Da hindres ingen.</li>
           <li>I ditt forslag kan midt- og vinduspassasjerer flytte seg inn mot midtgangen og ta ned bagasjen før det er deres tur. De går ut før tur bare når de er klare og plassen rett bak dem i midtgangen er tom. Det er det modellen kaller klar bane.</li>
           <li>Hver passasjer har sitt eget tempo. De trege bruker lengre tid på alt: å reise seg, flytte seg, ta ned bagasjen og gå.</li>
           <li>Noen tar ned bagasjen mens de venter. Det kan de gjøre stående ved midtgangssetet eller i midtsetet når det er ledig, men saktere enn fra midtgangen.</li>
@@ -820,9 +821,10 @@ tr.mine td:first-child { color: var(--signal); font-weight: 600; }
     reset();
   });
   /* ---------- Sammendrag ---------- */
-  const SUM = RES.summary;
-  // Lineær interpolasjon i tabellen over kabinfaktor.
-  function atLF(lf) {
+  // Lineær interpolasjon i tabellen over kabinfaktor. door: null = bare fremre dør,
+  // ellers sekunder til bakre dør åpnes.
+  function atLF(lf, door = null) {
+    const SUM = door === null ? RES.summary : RES.summaryRear[door];
     lf = Math.max(SUM[0].loadFactor, Math.min(1, lf));
     let i = 0;
     while (i < SUM.length - 2 && SUM[i + 1].loadFactor < lf) i++;
@@ -868,29 +870,35 @@ tr.mine td:first-child { color: var(--signal); font-weight: 600; }
     { id: 'nas', name: 'Norwegian', pax: 23.2, sa: 100, seats: 186, lf: 86 },
     { id: 'sas', name: 'SAS', pax: 28.3, sa: 75, seats: 180, lf: 80 },
   ];
-  const COMMON = { front: 50, turn: 85, gate: 17.78, delay: 100 };
+  const COMMON = { front: 50, rearAfter: 1, turn: 85, gate: 17.78, delay: 100 };
   const FIELDS = [
     ['pax', 'Passasjerer per år (millioner)', 0.1], ['sa', 'Andel på fly med rundt 180 seter (%)', 1],
     ['seats', 'Seter per fly', 1], ['lf', 'Kabinfaktor (%)', 1],
   ];
   const CFIELDS = [
-    ['front', 'Andel flyginger med bare fremre dør (%)', 1], ['turn', 'Andel ankomster der flyet snur videre (%)', 1],
+    ['front', 'Andel flyginger med bare fremre dør (%)', 1],
+    ['rearAfter', 'Resten: bakre dør åpnes etter (1, 2 eller 3 min)', 1], ['turn', 'Andel ankomster der flyet snur videre (%)', 1],
     ['gate', 'Kostnad ved gate (€ per minutt)', 0.01], ['delay', 'Kostnad per forsinkelsesminutt (€)', 1],
   ];
   const nf = (x, d = 0) => x.toLocaleString('nb-NO', { maximumFractionDigits: d, minimumFractionDigits: d });
   const meur = (x) => nf(x / 1e6, 1) + ' mill. €';
   function renderAirlines() {
     $('airlines').innerHTML = AIRLINES.map((a) => {
-      const x = atLF(a.lf / 100);
-      const saveMin = (x.vanlig - x.forslag) / 60;
+      const rearAt = Math.min(3, Math.max(1, Math.round(COMMON.rearAfter))) * 60;
+      const x = atLF(a.lf / 100), y = atLF(a.lf / 100, rearAt);
+      const saveFront = (x.vanlig - x.forslag) / 60, saveRear = (y.vanlig - y.forslag) / 60;
       const flights = (a.pax * 1e6 * a.sa / 100) / (a.seats * a.lf / 100);
-      const frontFlights = flights * COMMON.front / 100;
-      const turnMin = frontFlights * saveMin * COMMON.turn / 100;
-      const paxHours = a.pax * 1e6 * a.sa / 100 * COMMON.front / 100 * (x.paxVanlig - x.paxForslag) / 3600;
+      const fShare = Math.min(100, COMMON.front) / 100;
+      const frontFlights = flights * fShare, rearFlights = flights - frontFlights;
+      const turnMin = (frontFlights * saveFront + rearFlights * saveRear) * COMMON.turn / 100;
+      const pax = a.pax * 1e6 * a.sa / 100;
+      const paxHours = pax * (fShare * (x.paxVanlig - x.paxForslag) + (1 - fShare) * (y.paxVanlig - y.paxForslag)) / 3600;
       return `<div class="airline"><h4>${a.name}</h4><dl>
         <dt>Flyginger per år, anslått</dt><dd>${nf(flights)}</dd>
-        <dt>… med bare fremre dør</dt><dd>${nf(frontFlights)}</dd>
-        <dt>Spart per slik flyging</dt><dd>${nf(saveMin, 1)} min</dd>
+        <dt>Bare fremre dør: flyginger</dt><dd>${nf(frontFlights)}</dd>
+        <dt>… spart per flyging</dt><dd>${nf(saveFront, 1)} min</dd>
+        <dt>Bakre dør etter ${rearAt / 60} min: flyginger</dt><dd>${nf(rearFlights)}</dd>
+        <dt>… spart per flyging</dt><dd>${nf(saveRear, 1)} min</dd>
         <dt>Spart bakketid i snuoperasjoner</dt><dd>${nf(turnMin / 60)} flytimer</dd>
         <dt>Verdi, kostnad ved gate</dt><dd class="big">${meur(turnMin * COMMON.gate)}</dd>
         <dt>Verdi, om minuttene hindrer forsinkelser</dt><dd class="big">${meur(turnMin * COMMON.delay)}</dd>

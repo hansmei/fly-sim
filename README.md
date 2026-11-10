@@ -10,24 +10,24 @@ Siden er privat til den deles fra Del-menyen øverst på den.
 
 | | Fullt fly (180) | 86 % fullt |
 |---|---|---|
-| Vanlig praksis: alle går når de kan | 12:10 | 10:19 |
-| **Beste løsning: tre bølger med innfletting** | **8:01** | **6:58** |
-| Teoretisk optimum: døra står aldri ledig | 5:16 | 4:32 |
+| Vanlig praksis: alle går når de kan | 12:09 | 10:18 |
+| **Beste løsning: tre bølger med innfletting** | **8:06** | **7:03** |
+| Teoretisk optimum: døra står aldri ledig | 5:15 | 4:32 |
 
 Medianen av 200 simulerte flyginger per scenario.
 
 - **Beste løsning er rundt en tredel raskere enn vanlig praksis.** Den sparer
-  4,1 minutter på et fullt fly og 3,4 minutter ved 86 % kabinfaktor. Den
+  4,1 minutter på et fullt fly og 3,3 minutter ved 86 % kabinfaktor. Den
   gjennomsnittlige passasjeren er ute 2 minutter tidligere.
-- **Det finnes ingen enkelt vinner, men et platå.** `optimize.js` testet 264
-  regler. De beste ligger alle rundt 8 minutter, med mindre forskjell enn
+- **Det finnes ingen enkelt vinner, men et platå.** `optimize.js` testet 317
+  regler. De beste ligger mellom 7:50 og 8:10, med mindre forskjell enn
   variasjonen fra fly til fly. Tre bølger med innfletting er den enkleste av dem
   å forklare for passasjerene.
 - **Resten opp til optimum skyldes bagasjen, ikke rekkefølgen.** Tar alle ned
   bagasjen ved setet, har den over egen rad og ingen er trege, tar beste løsning
-  5:42. Kortere enn 5:16 går det bare med en dør til.
+  5:41. Kortere enn 5:15 går det bare med en dør til.
 - **Med bakre dør åpnet etter 1 minutt** tar vanlig praksis 8:09 og ditt forslag
-  6:07. Se [Med bakre dør](#med-bakre-dør).
+  6:09. Se [Med bakre dør](#med-bakre-dør).
 - **Business først koster rundt et halvt minutt** med beste løsning, men nesten
   ingenting med vanlig praksis.
 
@@ -37,8 +37,8 @@ Medianen av 200 simulerte flyginger per scenario.
    Rundt 70 % gjør det allerede i dag.
 2. Bølge 1: midtgangssetene går. Imens flytter midt- og vinduspassasjerer seg
    inn på det ledige setet og tar ned bagasjen der.
-3. Den som er klar, fletter inn når plassen rett bak i midtgangen er tom. Ellers
-   venter de.
+3. Den som er klar, fletter inn når plassen rett bak i midtgangen er tom. Er
+   gangen helt tom bak raden, går man uansett. Ellers venter man.
 4. Bølge 2 og 3: midtsetene går ut i gangen samtidig, så vindussetene.
 
 Kabinpersonalet må annonsere bølgene tydelig og holde igjen dem som ikke er
@@ -47,14 +47,19 @@ ombordstigning om å legge bagasjen over egen rad, faller tiden mot 6 minutter.
 
 ### Hva det er verdt i året
 
+Halvparten av flygingene antas å bruke bare fremre dør. På resten åpnes bakre dør
+etter 1 minutt. Gevinsten er forskjellen mellom vanlig praksis og beste løsning
+med samme dør.
+
 | | Norwegian | SAS |
 |---|---|---|
-| Flyginger der bare fremre dør brukes | ca. 72 500 | ca. 73 700 |
-| Spart per slik flyging | 3,4 min | 3,1 min |
-| Spart bakketid i snuoperasjoner | ca. 3 500 flytimer | ca. 3 200 flytimer |
-| Verdi, regnet som kostnad ved gate | ca. 3,7 mill. € | ca. 3,4 mill. € |
-| Verdi, hvis minuttene hindrer forsinkelser | ca. 21 mill. € | ca. 19 mill. € |
-| Passasjertid spart | ca. 390 000 timer | ca. 320 000 timer |
+| Flyginger per år, anslått | ca. 145 000 | ca. 147 000 |
+| Spart per flyging, bare fremre dør | 3,3 min | 3,1 min |
+| Spart per flyging, bakre dør etter 1 min | 1,5 min | 1,4 min |
+| Spart bakketid i snuoperasjoner | ca. 4 900 flytimer | ca. 4 700 flytimer |
+| Verdi, regnet som kostnad ved gate | ca. 5,2 mill. € | ca. 5,0 mill. € |
+| Verdi, hvis minuttene hindrer forsinkelser | ca. 30 mill. € | ca. 28 mill. € |
+| Passasjertid spart | ca. 540 000 timer | ca. 450 000 timer |
 
 Den sanne verdien ligger trolig mellom de to verdiradene. Forutsetningene står
 nederst og kan endres på siden.
@@ -70,11 +75,11 @@ setet sitt.
 | Scenario | Regel |
 |---|---|
 | Vanlig praksis: alle går når de kan | Slik det går for seg i dag. Alle går ut i midtgangen så snart det er ledig ved raden deres. |
-| Høflig rad for rad | Slik det ville gått om alle var høflige. Neste rad reiser seg når raden foran begynner å gå. |
+| Høflig rad for rad | Slik det ville gått om alle var høflige. Neste rad reiser seg når raden foran begynner å gå. Er gangen tom ved raden og bakover, går man uten å vente på tur. |
 | Tre bølger, alle sitter til sin tur | Midtgangsseter, så midtseter, så vindusseter. Hver bølge venter sittende til forrige er ute, og går så ut i gangen og tar ned bagasjen samtidig. |
 | Tre bølger, gjør seg klare imens | Som over, men de som venter, flytter seg inn på det ledige setet mot midtgangen og tar ned bagasjen der. |
-| Tre bølger med innfletting (forslaget) | Som over, og de som er klare, går før tur når det er klar bane: plassen rett bak dem i midtgangen er tom. |
-| Seks bølger, bakre halvdel først | Den beste regelen `optimize.js` fant. Som forslaget, men hver bølge deles i rad 16–30 og så rad 1–15, og neste bølge slippes når 75 % av forrige er ute. |
+| Tre bølger med innfletting (forslaget) | Som over, og de som er klare, går før tur når det er klar bane: plassen rett bak dem i midtgangen er tom. Er gangen helt tom bak raden, går man uansett. |
+| Seks bølger, bakre halvdel først | Den beste regelen `optimize.js` fant. Som forslaget, men hver bølge deles i rad 16–30 og så rad 1–15, og neste bølge slippes når forrige er ute. |
 
 Hvert scenario kjøres i tre kabiner:
 
@@ -93,16 +98,16 @@ passasjer er ute, og andelen som går ut bakre dør står i parentes.
 
 | Scenario | Bare fremre dør | Bakre dør etter 1 min | Bakre dør etter 2 min | Bakre dør etter 3 min |
 |---|---|---|---|---|
-| Seks bølger, bakre halvdel først | 7:58 | 6:21 (43 % bak) | 6:16 (29 % bak) | 6:38 (24 % bak) |
-| **Tre bølger med innfletting (ditt forslag)** | 8:00 | 6:07 (50 % bak) | 6:38 (43 % bak) | 6:34 (28 % bak) |
+| Seks bølger, bakre halvdel først | 7:50 | 6:54 (42 % bak) | 6:56 (28 % bak) | 7:14 (20 % bak) |
+| **Tre bølger med innfletting (ditt forslag)** | 8:06 | 6:09 (50 % bak) | 6:39 (43 % bak) | 6:35 (28 % bak) |
 | Tre bølger, alle sitter til sin tur | 10:38 | 7:42 (50 % bak) | 7:53 (43 % bak) | 8:01 (33 % bak) |
 | Tre bølger, gjør seg klare imens | 11:24 | 7:38 (50 % bak) | 7:51 (42 % bak) | 7:59 (33 % bak) |
 | Vanlig praksis: alle går når de kan | 12:09 | 8:09 (50 % bak) | 9:10 (50 % bak) | 10:13 (50 % bak) |
-| Høflig rad for rad | 12:57 | 8:09 (49 % bak) | 8:59 (48 % bak) | 9:51 (46 % bak) |
+| Høflig rad for rad | 12:13 | 8:00 (49 % bak) | 8:53 (48 % bak) | 9:33 (46 % bak) |
 
 - **Vanlig praksis tjener mest på bakre dør.** Hvert minutt den holdes stengt,
   koster rundt ett minutt.
-- **Ditt forslag med bare fremre dør (8:00)** er omtrent like raskt som vanlig
+- **Ditt forslag med bare fremre dør (8:06)** er omtrent like raskt som vanlig
   praksis med bakre dør åpnet etter 1 minutt (8:09).
 - **Med bakre dør er bølgereglene fortsatt raskest**, og lite følsomme for når
   døra åpnes. Midt- og vindussetene i bakre halvdel har uansett ikke begynt å gå
@@ -145,12 +150,22 @@ variantene vi prøvde, med 8–9 minutter mot rundt 12 for vanlig praksis, der a
 
 ## Den beste regelen
 
-`optimize.js` tester 264 regler. Ingen regel kan slå 5,3 minutter, fordi døra
-rommer én person om gangen. De beste reglene, også forslaget, havner på et
-platå rundt 8 minutter. Forskjellen mellom dem er mindre enn variasjonen fra fly
-til fly. Resten av avstanden til grensen skyldes bagasjen: tar alle ned
-bagasjen ved setet, har den over egen rad og ingen er trege, tar forslaget 5,7
-minutter.
+`optimize.js` tester 317 regler. Ingen regel kan slå 5:15, fordi døra rommer én
+person om gangen. De beste reglene havner på et platå mellom 7:50 og 8:10, og
+forskjellen mellom dem er mindre enn variasjonen fra fly til fly. Den beste
+funnet er seks bølger med bakre halvdel først i hver bølge (7:50). Ditt forslag
+tar 8:06. Resten av avstanden til grensen skyldes bagasjen: tar alle ned
+bagasjen ved setet, har den over egen rad og ingen er trege, tar forslaget 5:41.
+
+## Ledig gang
+
+I høflig rad for rad, ditt forslag og den beste regelen går man uten å vente på
+tur når midtgangen ved raden og hele veien bakover er tom, og ingen bak er på
+vei ut. Da hindres ingen. Uten denne regelen satt vinduspassasjerene til sammen
+6–8 minutter per flyging og ventet med tom gang bak seg. Med regelen er det
+nesten borte. For høflig rad for rad sparer det rundt et halvt minutt. For
+bølgereglene endrer det nesten ingenting, fordi døra allerede jobber for fullt:
+de som går tidligere, stiller seg bakerst i køen i stedet for å vente i setet.
 
 ## Forutsetninger for årsverdien
 
@@ -164,8 +179,8 @@ siden. Standardverdiene er:
 | Seter per fly | 186 | 180 |
 | Kabinfaktor | 86 % (4. kvartal 2025) | 80 % (anslag) |
 
-Felles anslag: 50 % av flygingene bruker bare fremre dør, og flyet snur videre
-etter 85 % av ankomstene. Spart tid er verdsatt med Eurocontrols standardverdier:
+Felles anslag: 50 % av flygingene bruker bare fremre dør, på resten åpnes bakre
+dør etter 1 minutt, og flyet snur videre etter 85 % av ankomstene. Spart tid er verdsatt med Eurocontrols standardverdier:
 17,78 € per minutt for et fly som står ved gate (2022-priser) og rundt 100 € per
 forsinkelsesminutt. Den siste gjelder bare minutter som faktisk hindrer
 forsinkelser, så den sanne verdien ligger trolig mellom de to.

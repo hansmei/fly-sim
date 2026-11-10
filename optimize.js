@@ -52,9 +52,10 @@ const TRIGGERS = [1, 0.75, 0.5, 'entered'];
 const STYLES = [
   { prep: false, merge: 0, label: 'sitter til sin tur' },
   { prep: true, merge: 0, label: 'gjør seg klare' },
-  { prep: true, merge: 1, label: 'fletter inn, 1 tom plass bak' },
-  { prep: true, merge: 2, label: 'fletter inn, 2 tomme plasser bak' },
-  { prep: true, merge: 3, label: 'fletter inn, 3 tomme plasser bak' },
+  { prep: true, merge: 0, freeGo: true, label: 'gjør seg klare, går når gangen er ledig' },
+  { prep: true, merge: 1, freeGo: true, label: 'fletter inn, 1 tom plass bak' },
+  { prep: true, merge: 2, freeGo: true, label: 'fletter inn, 2 tomme plasser bak' },
+  { prep: true, merge: 3, freeGo: true, label: 'fletter inn, 3 tomme plasser bak' },
 ];
 const trigText = (t) => (t === 'entered' ? 'neste gruppe når forrige har forlatt setene' : t === 1 ? 'neste gruppe når forrige er ute' : `neste gruppe når ${t * 100} % av forrige er ute`);
 
@@ -62,7 +63,7 @@ const FORSLAG = 'Ditt forslag: tre bølger med innfletting';
 const VANLIG = 'Vanlig praksis: alle går når de kan';
 const RAD = 'Høflig rad for rad';
 const candidates = [
-  { name: RAD, policy: { kind: 'rad' } },
+  { name: RAD, policy: { kind: 'rad', freeGo: true } },
   { name: VANLIG, policy: { kind: 'fritt' } },
 ];
 for (const [oName, groups] of Object.entries(ORDERS)) {
@@ -73,7 +74,7 @@ for (const [oName, groups] of Object.entries(ORDERS)) {
       candidates.push({
         name: isForslag ? FORSLAG : `${oName}; ${groups.length > 1 ? trigText(trig) + '; ' : ''}${st.label}`,
         order: oName, trigger: trig, style: st.label,
-        policy: { groups, trigger: trig, prep: st.prep, merge: st.merge },
+        policy: { groups, trigger: trig, prep: st.prep, merge: st.merge, freeGo: !!st.freeGo },
       });
     }
   }

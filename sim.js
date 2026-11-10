@@ -87,6 +87,8 @@
   // prep: de som venter, kan flytte seg inn mot midtgangen og ta ned bagasjen imens.
   // merge: de som er klare, fletter inn når det er klar bane bak dem (true = PARAMS.mergeGap
   //   tomme plasser, eller et tall).
+  // freeGo: er midtgangen tom ved raden og hele veien bakover (mot døra de skal til), og ingen
+  //   bak er på vei ut, går man selv om det ikke er ens tur. Da hindres ingen.
   const WAVE_LABELS = ['Bølge 1: midtgangsseter', 'Bølge 2: midtseter', 'Bølge 3: vindusseter'];
   const SCENARIOS = [
     {
@@ -94,7 +96,8 @@
       name: 'Høflig rad for rad',
       short: 'Rad for rad',
       kind: 'rad',
-      desc: 'Slik det ville gått om alle var høflige. Hver rad venter på tur. Er bakre dør åpen, tømmes bakre halvdel rad for rad bakfra. Neste rad reiser seg når raden foran begynner å gå ut i midtgangen. De som alt står i midtgangen, går når køen beveger seg.',
+      desc: 'Slik det ville gått om alle var høflige. Hver rad venter på tur. Er bakre dør åpen, tømmes bakre halvdel rad for rad bakfra. Neste rad reiser seg når raden foran begynner å gå ut i midtgangen. De som alt står i midtgangen, går når køen beveger seg. Er gangen tom ved raden og bakover, går man uten å vente på tur.',
+      freeGo: true,
     },
     {
       id: 'fritt',
@@ -121,18 +124,18 @@
       id: 'forslag',
       name: 'Tre bølger med innfletting',
       short: 'Ditt forslag',
-      desc: 'Midtgangssetene går først. Imens flytter midt- og vinduspassasjerer seg inn på det ledige midtgangssetet og tar ned bagasjen. Er de klare og det er klar bane i midtgangen, går de ut. Ellers venter de. Når midtgangssetene er ute, går alle på midtsetet ut i gangen samtidig, og til slutt vindussetene.',
-      groups: ['CD', 'BE', 'AF'], labels: WAVE_LABELS, prep: true, merge: true,
+      desc: 'Midtgangssetene går først. Imens flytter midt- og vinduspassasjerer seg inn på det ledige midtgangssetet og tar ned bagasjen. Er de klare og det er klar bane i midtgangen, går de ut. Ellers venter de. Når midtgangssetene er ute, går alle på midtsetet ut i gangen samtidig, og til slutt vindussetene. Er gangen helt tom bak raden, går man selv om man ikke er klar.',
+      groups: ['CD', 'BE', 'AF'], labels: WAVE_LABELS, prep: true, merge: true, freeGo: true,
     },
     {
       id: 'beste',
       name: 'Seks bølger, bakre halvdel først',
       short: 'Beste regel funnet',
-      desc: 'Den raskeste regelen optimize.js fant, statistisk likt med ditt forslag. Som ditt forslag, men hver bølge deles i to: først rad 16–30, så rad 1–15. Neste bølge slippes når 75 % av forrige er ute, og de som er klare, fletter inn når plassen rett bak er tom.',
+      desc: 'Den raskeste regelen optimize.js fant, statistisk likt med ditt forslag. Som ditt forslag, men hver bølge deles i to: først rad 16–30, så rad 1–15. Neste bølge slippes når forrige er ute, og de som er klare, fletter inn når plassen rett bak er tom. Er gangen helt tom bak raden, går man selv om det ikke er ens tur.',
       groups: ['CD@16-30', 'CD@1-15', 'BE@16-30', 'BE@1-15', 'AF@16-30', 'AF@1-15'],
       labels: ['Bølge 1: midtgangsseter, rad 16–30', 'Bølge 2: midtgangsseter, rad 1–15', 'Bølge 3: midtseter, rad 16–30',
         'Bølge 4: midtseter, rad 1–15', 'Bølge 5: vindusseter, rad 16–30', 'Bølge 6: vindusseter, rad 1–15'],
-      trigger: 0.75, prep: true, merge: true,
+      trigger: 1, prep: true, merge: true, freeGo: true,
     },
   ];
 
@@ -246,6 +249,11 @@
     const N = agents.length;
     const frontClear = new Uint8Array(R + 2);
     const backClear = new Uint8Array(R + 2);
+    // Ledig gang: freeBack[c] = ingen i midtgangen og ingen på vei ut fra rad c og bakover.
+    // freeFront[c] = det samme fra rad c og fremover til rearSplit+1 (mot bakre dør).
+    const freeBack = new Uint8Array(R + 3);
+    const freeFront = new Uint8Array(R + 2);
+    const pendingGo = new Int16Array(R + 2);
     let t = 0, out = 0;
     let relIdx = G > 0 ? 1 : 0; // antall grupper som er sluppet
 
@@ -262,6 +270,16 @@
       for (let row = 2; row <= R; row++) {
         if (row >= 3) doneBefore = doneBefore && rowLeft[row - 2] === 0 ? 1 : 0;
         frontClear[row] = doneBefore && (rowEntered[row - 1] > 0 || rowLeft[row - 1] === 0) ? 1 : 0;
+      }
+      if (S.freeGo) {
+        pendingGo.fill(0);
+        for (const a of agents) if (a.go && a.cell < 0 && a.state !== 'out') pendingGo[a.row]++;
+        freeBack[R + 1] = 1;
+        for (let c = R; c >= 1; c--) freeBack[c] = freeBack[c + 1] && aisle[c] === null && pendingGo[c] === 0 ? 1 : 0;
+        if (rearOpen) {
+          freeFront[P.rearSplit] = 1;
+          for (let c = P.rearSplit + 1; c <= R; c++) freeFront[c] = freeFront[c - 1] && aisle[c] === null && pendingGo[c] === 0 ? 1 : 0;
+        }
       }
       // Med bakre dør åpen: bakre halvdel tømmes rad for rad bakfra, mot bakre dør.
       if (rearOpen) {
@@ -291,9 +309,16 @@
       for (let k = 1; k <= mergeGap && c + k <= R; k++) if (aisle[c + k] !== null) return false;
       return true;
     }
+    // Ledig gang ved raden: plassen ved raden er tom, og ingen bak (mot døra man skal til) trenger forbi.
+    function aisleFree(row) {
+      if (!S.freeGo || aisle[row] !== null) return false;
+      if (rearOpen && row > P.rearSplit) return freeFront[row - 1] === 1;
+      return freeBack[row + 1] === 1;
+    }
     function mayEnter(a, c) {
       if (a.state !== 'ready' || a.depth !== 1) return false;
       if (a.go) return true;
+      if (aisleFree(c) && !(curtainClosed() && !a.business)) return true;
       return mergeGap > 0 && prepared(a) && clearBehind(c);
     }
 
@@ -377,7 +402,7 @@
           case 'seated':
             if (!a.go && released(a)) a.go = true;
             // Uten tillatelse kan man i noen scenarier likevel gjøre seg klar ved setet.
-            if (!a.go && !(S.prep && a.seatBagger)) break;
+            if (!a.go && !(S.prep && a.seatBagger) && !aisleFree(a.row)) break;
             // Står i midtsetet og venter: kan ta ned bagasjen herfra.
             if (a.standing && a.depth === 2 && a.seatBagger && a.bagLeft > 0) a.bagLeft -= dt * P.seatBagRate[1];
             if (a.depth === 1) {

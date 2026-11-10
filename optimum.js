@@ -1,8 +1,8 @@
 // Generert av optimize.js. Ikke rediger for hånd.
 window.UTSTIGNING_OPTIMUM = {
-  "generated": "2026-11-08",
+  "generated": "2026-11-10",
   "lowerBound": 315.939520793332,
-  "tested": 264,
+  "tested": 317,
   "coarseRuns": 30,
   "fineRuns": 200,
   "robustRuns": 40,
@@ -17,9 +17,9 @@ window.UTSTIGNING_OPTIMUM = {
   ],
   "fine": [
     {
-      "name": "Bølger, bakre halvdel først; neste gruppe når 75 % av forrige er ute; fletter inn, 1 tom plass bak",
+      "name": "Bølger, bakre halvdel først; neste gruppe når forrige er ute; fletter inn, 1 tom plass bak",
       "order": "Bølger, bakre halvdel først",
-      "trigger": 0.75,
+      "trigger": 1,
       "style": "fletter inn, 1 tom plass bak",
       "policy": {
         "groups": [
@@ -30,396 +30,51 @@ window.UTSTIGNING_OPTIMUM = {
           "AF@16-30",
           "AF@1-15"
         ],
-        "trigger": 0.75,
-        "prep": true,
-        "merge": 1
-      },
-      "fine": {
-        "id": "x",
-        "runs": 200,
-        "mean": 482.19500000004086,
-        "p10": 434.8900000000304,
-        "median": 478.1000000000402,
-        "p90": 532.0200000000524,
-        "min": 386.5000000000194,
-        "max": 635.800000000076
-      },
-      "robust": [
-        {
-          "variant": "Standard",
-          "median": 475.70000000003967
-        },
-        {
-          "variant": "Halvparten klare ved landing",
-          "median": 483.7000000000415
-        },
-        {
-          "variant": "Få tar ned bagasjen fra setet (30 %)",
-          "median": 548.2000000000561
-        },
-        {
-          "variant": "Mange kofferter i annen rad (50 %)",
-          "median": 520.0000000000497
-        },
-        {
-          "variant": "Mange trege (25 %)",
-          "median": 534.8500000000531
-        },
-        {
-          "variant": "Mange utålmodige (25 %)",
-          "median": 482.1000000000411
-        },
-        {
-          "variant": "Business i rad 1–4 går først",
-          "median": 494.10000000004385
-        }
-      ]
-    },
-    {
-      "name": "Ditt forslag: tre bølger med innfletting",
-      "order": "Tre bølger: midtgang, midt, vindu",
-      "trigger": 1,
-      "style": "fletter inn, 1 tom plass bak",
-      "policy": {
-        "groups": [
-          "CD",
-          "BE",
-          "AF"
-        ],
         "trigger": 1,
         "prep": true,
-        "merge": 1
+        "merge": 1,
+        "freeGo": true
       },
       "fine": {
         "id": "x",
         "runs": 200,
-        "mean": 484.83150000004184,
-        "p10": 434.3900000000303,
-        "median": 480.55000000004077,
-        "p90": 539.8900000000542,
-        "min": 407.2000000000241,
-        "max": 643.7000000000778
+        "mean": 472.56700000003866,
+        "p10": 431.13000000002955,
+        "median": 470.2500000000384,
+        "p90": 515.9200000000487,
+        "min": 394.30000000002116,
+        "max": 606.0000000000692
       },
       "robust": [
         {
           "variant": "Standard",
-          "median": 484.1500000000416
+          "median": 471.0500000000386
         },
         {
           "variant": "Halvparten klare ved landing",
-          "median": 491.7000000000433
+          "median": 479.15000000004045
         },
         {
           "variant": "Få tar ned bagasjen fra setet (30 %)",
-          "median": 527.1500000000513
+          "median": 549.4000000000564
         },
         {
           "variant": "Mange kofferter i annen rad (50 %)",
-          "median": 505.8500000000465
+          "median": 521.7000000000501
         },
         {
           "variant": "Mange trege (25 %)",
-          "median": 539.6500000000542
+          "median": 520.9500000000498
         },
         {
           "variant": "Mange utålmodige (25 %)",
-          "median": 495.40000000004414
+          "median": 485.2000000000418
         },
         {
           "variant": "Business i rad 1–4 går først",
-          "median": 501.10000000004544
+          "median": 495.2500000000441
         }
       ]
-    },
-    {
-      "name": "Seks kolonner, én side om gangen; neste gruppe når 75 % av forrige er ute; fletter inn, 1 tom plass bak",
-      "order": "Seks kolonner, én side om gangen",
-      "trigger": 0.75,
-      "style": "fletter inn, 1 tom plass bak",
-      "policy": {
-        "groups": [
-          "C",
-          "D",
-          "B",
-          "E",
-          "A",
-          "F"
-        ],
-        "trigger": 0.75,
-        "prep": true,
-        "merge": 1
-      },
-      "fine": {
-        "id": "x",
-        "runs": 200,
-        "mean": 484.3110000000418,
-        "p10": 441.30000000003184,
-        "median": 482.30000000004117,
-        "p90": 529.8500000000519,
-        "min": 415.90000000002607,
-        "max": 600.9000000000681
-      },
-      "robust": [
-        {
-          "variant": "Standard",
-          "median": 482.75000000004127
-        },
-        {
-          "variant": "Halvparten klare ved landing",
-          "median": 492.1500000000434
-        },
-        {
-          "variant": "Få tar ned bagasjen fra setet (30 %)",
-          "median": 516.4500000000489
-        },
-        {
-          "variant": "Mange kofferter i annen rad (50 %)",
-          "median": 521.50000000005
-        },
-        {
-          "variant": "Mange trege (25 %)",
-          "median": 539.100000000054
-        },
-        {
-          "variant": "Mange utålmodige (25 %)",
-          "median": 493.70000000004376
-        },
-        {
-          "variant": "Business i rad 1–4 går først",
-          "median": 490.0000000000429
-        }
-      ]
-    },
-    {
-      "name": "Bølger, oddetallsrader først; neste gruppe når 75 % av forrige er ute; fletter inn, 1 tom plass bak",
-      "order": "Bølger, oddetallsrader først",
-      "trigger": 0.75,
-      "style": "fletter inn, 1 tom plass bak",
-      "policy": {
-        "groups": [
-          "CD@odd",
-          "CD@even",
-          "BE@odd",
-          "BE@even",
-          "AF@odd",
-          "AF@even"
-        ],
-        "trigger": 0.75,
-        "prep": true,
-        "merge": 1
-      },
-      "fine": {
-        "id": "x",
-        "runs": 200,
-        "mean": 485.67400000004193,
-        "p10": 443.99000000003247,
-        "median": 485.6000000000419,
-        "p90": 530.7300000000521,
-        "min": 409.9000000000247,
-        "max": 599.2000000000677
-      },
-      "robust": [
-        {
-          "variant": "Standard",
-          "median": 480.05000000004065
-        },
-        {
-          "variant": "Halvparten klare ved landing",
-          "median": 492.6500000000435
-        },
-        {
-          "variant": "Få tar ned bagasjen fra setet (30 %)",
-          "median": 518.1000000000492
-        },
-        {
-          "variant": "Mange kofferter i annen rad (50 %)",
-          "median": 515.6000000000487
-        },
-        {
-          "variant": "Mange trege (25 %)",
-          "median": 537.7000000000537
-        },
-        {
-          "variant": "Mange utålmodige (25 %)",
-          "median": 486.4000000000421
-        },
-        {
-          "variant": "Business i rad 1–4 går først",
-          "median": 491.95000000004336
-        }
-      ]
-    },
-    {
-      "name": "Seks kolonner, én side om gangen; neste gruppe når 75 % av forrige er ute; fletter inn, 2 tomme plasser bak",
-      "order": "Seks kolonner, én side om gangen",
-      "trigger": 0.75,
-      "style": "fletter inn, 2 tomme plasser bak",
-      "policy": {
-        "groups": [
-          "C",
-          "D",
-          "B",
-          "E",
-          "A",
-          "F"
-        ],
-        "trigger": 0.75,
-        "prep": true,
-        "merge": 2
-      },
-      "fine": {
-        "id": "x",
-        "runs": 200,
-        "mean": 490.0940000000428,
-        "p10": 447.45000000003324,
-        "median": 487.00000000004223,
-        "p90": 538.1500000000538,
-        "min": 409.5000000000246,
-        "max": 578.9000000000631
-      },
-      "robust": [
-        {
-          "variant": "Standard",
-          "median": 486.25000000004206
-        },
-        {
-          "variant": "Halvparten klare ved landing",
-          "median": 494.55000000004395
-        },
-        {
-          "variant": "Få tar ned bagasjen fra setet (30 %)",
-          "median": 519.9500000000496
-        },
-        {
-          "variant": "Mange kofferter i annen rad (50 %)",
-          "median": 530.6000000000521
-        },
-        {
-          "variant": "Mange trege (25 %)",
-          "median": 538.2000000000538
-        },
-        {
-          "variant": "Mange utålmodige (25 %)",
-          "median": 492.6000000000435
-        },
-        {
-          "variant": "Business i rad 1–4 går først",
-          "median": 504.3500000000462
-        }
-      ]
-    },
-    {
-      "name": "Seks kolonner, én side om gangen; neste gruppe når forrige har forlatt setene; fletter inn, 1 tom plass bak",
-      "order": "Seks kolonner, én side om gangen",
-      "trigger": "entered",
-      "style": "fletter inn, 1 tom plass bak",
-      "policy": {
-        "groups": [
-          "C",
-          "D",
-          "B",
-          "E",
-          "A",
-          "F"
-        ],
-        "trigger": "entered",
-        "prep": true,
-        "merge": 1
-      },
-      "fine": {
-        "id": "x",
-        "runs": 200,
-        "mean": 494.4825000000439,
-        "p10": 453.19000000003456,
-        "median": 491.7500000000433,
-        "p90": 541.8600000000547,
-        "min": 405.30000000002366,
-        "max": 641.1000000000772
-      }
-    },
-    {
-      "name": "Bølger, oddetallsrader først; neste gruppe når forrige har forlatt setene; fletter inn, 1 tom plass bak",
-      "order": "Bølger, oddetallsrader først",
-      "trigger": "entered",
-      "style": "fletter inn, 1 tom plass bak",
-      "policy": {
-        "groups": [
-          "CD@odd",
-          "CD@even",
-          "BE@odd",
-          "BE@even",
-          "AF@odd",
-          "AF@even"
-        ],
-        "trigger": "entered",
-        "prep": true,
-        "merge": 1
-      },
-      "fine": {
-        "id": "x",
-        "runs": 200,
-        "mean": 496.99650000004476,
-        "p10": 452.6700000000344,
-        "median": 493.8000000000438,
-        "p90": 548.3600000000561,
-        "min": 396.7000000000217,
-        "max": 614.8000000000712
-      }
-    },
-    {
-      "name": "Tre bølger: midtgang, midt, vindu; neste gruppe når forrige er ute; fletter inn, 2 tomme plasser bak",
-      "order": "Tre bølger: midtgang, midt, vindu",
-      "trigger": 1,
-      "style": "fletter inn, 2 tomme plasser bak",
-      "policy": {
-        "groups": [
-          "CD",
-          "BE",
-          "AF"
-        ],
-        "trigger": 1,
-        "prep": true,
-        "merge": 2
-      },
-      "fine": {
-        "id": "x",
-        "runs": 200,
-        "mean": 496.86600000004466,
-        "p10": 447.6800000000333,
-        "median": 493.8500000000438,
-        "p90": 547.720000000056,
-        "min": 412.70000000002534,
-        "max": 616.0000000000715
-      }
-    },
-    {
-      "name": "Seks kolonner, én side om gangen; neste gruppe når 75 % av forrige er ute; fletter inn, 3 tomme plasser bak",
-      "order": "Seks kolonner, én side om gangen",
-      "trigger": 0.75,
-      "style": "fletter inn, 3 tomme plasser bak",
-      "policy": {
-        "groups": [
-          "C",
-          "D",
-          "B",
-          "E",
-          "A",
-          "F"
-        ],
-        "trigger": 0.75,
-        "prep": true,
-        "merge": 3
-      },
-      "fine": {
-        "id": "x",
-        "runs": 200,
-        "mean": 499.0185000000453,
-        "p10": 454.1800000000348,
-        "median": 495.7500000000442,
-        "p90": 545.2000000000554,
-        "min": 419.30000000002684,
-        "max": 597.9000000000674
-      }
     },
     {
       "name": "Seks kolonner, én side om gangen; neste gruppe når forrige er ute; fletter inn, 1 tom plass bak",
@@ -437,24 +92,55 @@ window.UTSTIGNING_OPTIMUM = {
         ],
         "trigger": 1,
         "prep": true,
-        "merge": 1
+        "merge": 1,
+        "freeGo": true
       },
       "fine": {
         "id": "x",
         "runs": 200,
-        "mean": 499.02300000004453,
-        "p10": 460.32000000003615,
-        "median": 496.5000000000444,
-        "p90": 540.2000000000543,
-        "min": 418.7000000000267,
-        "max": 577.9000000000628
-      }
+        "mean": 474.59950000003926,
+        "p10": 435.7300000000306,
+        "median": 474.4500000000394,
+        "p90": 516.810000000049,
+        "min": 394.1000000000211,
+        "max": 578.500000000063
+      },
+      "robust": [
+        {
+          "variant": "Standard",
+          "median": 464.7500000000372
+        },
+        {
+          "variant": "Halvparten klare ved landing",
+          "median": 474.1000000000393
+        },
+        {
+          "variant": "Få tar ned bagasjen fra setet (30 %)",
+          "median": 498.50000000004485
+        },
+        {
+          "variant": "Mange kofferter i annen rad (50 %)",
+          "median": 499.9500000000452
+        },
+        {
+          "variant": "Mange trege (25 %)",
+          "median": 526.4500000000512
+        },
+        {
+          "variant": "Mange utålmodige (25 %)",
+          "median": 489.0500000000427
+        },
+        {
+          "variant": "Business i rad 1–4 går først",
+          "median": 493.25000000004366
+        }
+      ]
     },
     {
-      "name": "Bølger, oddetallsrader først; neste gruppe når 75 % av forrige er ute; fletter inn, 3 tomme plasser bak",
+      "name": "Bølger, oddetallsrader først; neste gruppe når forrige er ute; fletter inn, 1 tom plass bak",
       "order": "Bølger, oddetallsrader først",
-      "trigger": 0.75,
-      "style": "fletter inn, 3 tomme plasser bak",
+      "trigger": 1,
+      "style": "fletter inn, 1 tom plass bak",
       "policy": {
         "groups": [
           "CD@odd",
@@ -464,25 +150,176 @@ window.UTSTIGNING_OPTIMUM = {
           "AF@odd",
           "AF@even"
         ],
-        "trigger": 0.75,
+        "trigger": 1,
         "prep": true,
-        "merge": 3
+        "merge": 1,
+        "freeGo": true
       },
       "fine": {
         "id": "x",
         "runs": 200,
-        "mean": 499.1220000000448,
-        "p10": 454.3600000000348,
-        "median": 498.6000000000449,
-        "p90": 542.8100000000549,
-        "min": 420.70000000002716,
-        "max": 591.4000000000659
-      }
+        "mean": 475.0960000000394,
+        "p10": 435.65000000003056,
+        "median": 474.9000000000395,
+        "p90": 515.0700000000486,
+        "min": 395.9000000000215,
+        "max": 572.5000000000616
+      },
+      "robust": [
+        {
+          "variant": "Standard",
+          "median": 474.1500000000393
+        },
+        {
+          "variant": "Halvparten klare ved landing",
+          "median": 478.30000000004026
+        },
+        {
+          "variant": "Få tar ned bagasjen fra setet (30 %)",
+          "median": 505.3500000000464
+        },
+        {
+          "variant": "Mange kofferter i annen rad (50 %)",
+          "median": 503.40000000004596
+        },
+        {
+          "variant": "Mange trege (25 %)",
+          "median": 524.8000000000508
+        },
+        {
+          "variant": "Mange utålmodige (25 %)",
+          "median": 483.50000000004144
+        },
+        {
+          "variant": "Business i rad 1–4 går først",
+          "median": 490.15000000004295
+        }
+      ]
     },
     {
-      "name": "Seks kolonner, én side om gangen; neste gruppe når forrige har forlatt setene; fletter inn, 2 tomme plasser bak",
+      "name": "Bølger, bakre halvdel først; neste gruppe når forrige er ute; fletter inn, 2 tomme plasser bak",
+      "order": "Bølger, bakre halvdel først",
+      "trigger": 1,
+      "style": "fletter inn, 2 tomme plasser bak",
+      "policy": {
+        "groups": [
+          "CD@16-30",
+          "CD@1-15",
+          "BE@16-30",
+          "BE@1-15",
+          "AF@16-30",
+          "AF@1-15"
+        ],
+        "trigger": 1,
+        "prep": true,
+        "merge": 2,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 478.4915000000399,
+        "p10": 438.59000000003124,
+        "median": 475.65000000003965,
+        "p90": 523.3300000000504,
+        "min": 405.30000000002366,
+        "max": 609.1000000000699
+      },
+      "robust": [
+        {
+          "variant": "Standard",
+          "median": 466.85000000003765
+        },
+        {
+          "variant": "Halvparten klare ved landing",
+          "median": 489.80000000004287
+        },
+        {
+          "variant": "Få tar ned bagasjen fra setet (30 %)",
+          "median": 536.7500000000534
+        },
+        {
+          "variant": "Mange kofferter i annen rad (50 %)",
+          "median": 528.1000000000515
+        },
+        {
+          "variant": "Mange trege (25 %)",
+          "median": 520.7000000000498
+        },
+        {
+          "variant": "Mange utålmodige (25 %)",
+          "median": 492.9500000000436
+        },
+        {
+          "variant": "Business i rad 1–4 går først",
+          "median": 501.8500000000456
+        }
+      ]
+    },
+    {
+      "name": "Bølger, oddetallsrader først; neste gruppe når forrige er ute; fletter inn, 2 tomme plasser bak",
+      "order": "Bølger, oddetallsrader først",
+      "trigger": 1,
+      "style": "fletter inn, 2 tomme plasser bak",
+      "policy": {
+        "groups": [
+          "CD@odd",
+          "CD@even",
+          "BE@odd",
+          "BE@even",
+          "AF@odd",
+          "AF@even"
+        ],
+        "trigger": 1,
+        "prep": true,
+        "merge": 2,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 479.9355000000407,
+        "p10": 441.47000000003186,
+        "median": 477.9500000000402,
+        "p90": 522.9600000000504,
+        "min": 410.0000000000247,
+        "max": 566.9000000000603
+      },
+      "robust": [
+        {
+          "variant": "Standard",
+          "median": 472.60000000003896
+        },
+        {
+          "variant": "Halvparten klare ved landing",
+          "median": 486.70000000004217
+        },
+        {
+          "variant": "Få tar ned bagasjen fra setet (30 %)",
+          "median": 508.65000000004716
+        },
+        {
+          "variant": "Mange kofferter i annen rad (50 %)",
+          "median": 502.45000000004575
+        },
+        {
+          "variant": "Mange trege (25 %)",
+          "median": 537.4000000000536
+        },
+        {
+          "variant": "Mange utålmodige (25 %)",
+          "median": 497.5000000000446
+        },
+        {
+          "variant": "Business i rad 1–4 går først",
+          "median": 492.4500000000435
+        }
+      ]
+    },
+    {
+      "name": "Seks kolonner, én side om gangen; neste gruppe når forrige er ute; fletter inn, 2 tomme plasser bak",
       "order": "Seks kolonner, én side om gangen",
-      "trigger": "entered",
+      "trigger": 1,
       "style": "fletter inn, 2 tomme plasser bak",
       "policy": {
         "groups": [
@@ -493,19 +330,257 @@ window.UTSTIGNING_OPTIMUM = {
           "A",
           "F"
         ],
-        "trigger": "entered",
+        "trigger": 1,
         "prep": true,
-        "merge": 2
+        "merge": 2,
+        "freeGo": true
       },
       "fine": {
         "id": "x",
         "runs": 200,
-        "mean": 499.9705000000452,
-        "p10": 459.9900000000361,
-        "median": 499.90000000004517,
-        "p90": 543.490000000055,
-        "min": 399.60000000002236,
-        "max": 603.8000000000687
+        "mean": 480.8960000000409,
+        "p10": 444.57000000003256,
+        "median": 480.6500000000408,
+        "p90": 517.130000000049,
+        "min": 408.1000000000243,
+        "max": 585.0000000000645
+      }
+    },
+    {
+      "name": "Bølger, bakre halvdel først; neste gruppe når 75 % av forrige er ute; fletter inn, 1 tom plass bak",
+      "order": "Bølger, bakre halvdel først",
+      "trigger": 0.75,
+      "style": "fletter inn, 1 tom plass bak",
+      "policy": {
+        "groups": [
+          "CD@16-30",
+          "CD@1-15",
+          "BE@16-30",
+          "BE@1-15",
+          "AF@16-30",
+          "AF@1-15"
+        ],
+        "trigger": 0.75,
+        "prep": true,
+        "merge": 1,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 482.47100000004116,
+        "p10": 433.7200000000301,
+        "median": 481.80000000004105,
+        "p90": 533.3200000000527,
+        "min": 374.40000000001663,
+        "max": 641.0000000000772
+      }
+    },
+    {
+      "name": "Seks kolonner, én side om gangen; neste gruppe når forrige er ute; fletter inn, 3 tomme plasser bak",
+      "order": "Seks kolonner, én side om gangen",
+      "trigger": 1,
+      "style": "fletter inn, 3 tomme plasser bak",
+      "policy": {
+        "groups": [
+          "C",
+          "D",
+          "B",
+          "E",
+          "A",
+          "F"
+        ],
+        "trigger": 1,
+        "prep": true,
+        "merge": 3,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 485.6025000000419,
+        "p10": 449.3900000000337,
+        "median": 482.8500000000413,
+        "p90": 525.0300000000508,
+        "min": 408.70000000002443,
+        "max": 580.6000000000635
+      }
+    },
+    {
+      "name": "Bølger, bakre halvdel først; neste gruppe når forrige er ute; fletter inn, 3 tomme plasser bak",
+      "order": "Bølger, bakre halvdel først",
+      "trigger": 1,
+      "style": "fletter inn, 3 tomme plasser bak",
+      "policy": {
+        "groups": [
+          "CD@16-30",
+          "CD@1-15",
+          "BE@16-30",
+          "BE@1-15",
+          "AF@16-30",
+          "AF@1-15"
+        ],
+        "trigger": 1,
+        "prep": true,
+        "merge": 3,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 487.2785000000419,
+        "p10": 447.1400000000332,
+        "median": 485.0500000000418,
+        "p90": 530.650000000052,
+        "min": 414.8000000000258,
+        "max": 635.800000000076
+      }
+    },
+    {
+      "name": "Seks kolonner, én side om gangen; neste gruppe når 75 % av forrige er ute; fletter inn, 1 tom plass bak",
+      "order": "Seks kolonner, én side om gangen",
+      "trigger": 0.75,
+      "style": "fletter inn, 1 tom plass bak",
+      "policy": {
+        "groups": [
+          "C",
+          "D",
+          "B",
+          "E",
+          "A",
+          "F"
+        ],
+        "trigger": 0.75,
+        "prep": true,
+        "merge": 1,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 485.96450000004154,
+        "p10": 442.19000000003206,
+        "median": 485.35000000004186,
+        "p90": 534.610000000053,
+        "min": 398.100000000022,
+        "max": 589.4000000000655
+      }
+    },
+    {
+      "name": "Ditt forslag: tre bølger med innfletting",
+      "order": "Tre bølger: midtgang, midt, vindu",
+      "trigger": 1,
+      "style": "fletter inn, 1 tom plass bak",
+      "policy": {
+        "groups": [
+          "CD",
+          "BE",
+          "AF"
+        ],
+        "trigger": 1,
+        "prep": true,
+        "merge": 1,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 488.4130000000426,
+        "p10": 436.9800000000309,
+        "median": 486.55000000004213,
+        "p90": 545.0100000000554,
+        "min": 404.1000000000234,
+        "max": 616.7000000000717
+      },
+      "robust": [
+        {
+          "variant": "Standard",
+          "median": 488.1000000000425
+        },
+        {
+          "variant": "Halvparten klare ved landing",
+          "median": 495.45000000004416
+        },
+        {
+          "variant": "Få tar ned bagasjen fra setet (30 %)",
+          "median": 530.2500000000521
+        },
+        {
+          "variant": "Mange kofferter i annen rad (50 %)",
+          "median": 526.3500000000511
+        },
+        {
+          "variant": "Mange trege (25 %)",
+          "median": 546.6000000000557
+        },
+        {
+          "variant": "Mange utålmodige (25 %)",
+          "median": 496.30000000004435
+        },
+        {
+          "variant": "Business i rad 1–4 går først",
+          "median": 496.35000000004436
+        }
+      ]
+    },
+    {
+      "name": "Bølger, oddetallsrader først; neste gruppe når forrige er ute; fletter inn, 3 tomme plasser bak",
+      "order": "Bølger, oddetallsrader først",
+      "trigger": 1,
+      "style": "fletter inn, 3 tomme plasser bak",
+      "policy": {
+        "groups": [
+          "CD@odd",
+          "CD@even",
+          "BE@odd",
+          "BE@even",
+          "AF@odd",
+          "AF@even"
+        ],
+        "trigger": 1,
+        "prep": true,
+        "merge": 3,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 487.4595000000419,
+        "p10": 447.45000000003324,
+        "median": 487.05000000004225,
+        "p90": 531.6300000000523,
+        "min": 409.8000000000247,
+        "max": 567.8000000000605
+      }
+    },
+    {
+      "name": "Seks kolonner, én side om gangen; neste gruppe når 75 % av forrige er ute; fletter inn, 2 tomme plasser bak",
+      "order": "Seks kolonner, én side om gangen",
+      "trigger": 0.75,
+      "style": "fletter inn, 2 tomme plasser bak",
+      "policy": {
+        "groups": [
+          "C",
+          "D",
+          "B",
+          "E",
+          "A",
+          "F"
+        ],
+        "trigger": 0.75,
+        "prep": true,
+        "merge": 2,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 491.6780000000433,
+        "p10": 452.5400000000344,
+        "median": 490.60000000004305,
+        "p90": 530.090000000052,
+        "min": 416.0000000000261,
+        "max": 586.6000000000648
       }
     },
     {
@@ -557,25 +632,26 @@ window.UTSTIGNING_OPTIMUM = {
     {
       "name": "Høflig rad for rad",
       "policy": {
-        "kind": "rad"
+        "kind": "rad",
+        "freeGo": true
       },
       "fine": {
         "id": "x",
         "runs": 200,
-        "mean": 782.0420000001089,
-        "p10": 715.130000000094,
-        "median": 777.7000000001083,
-        "p90": 858.3200000001266,
-        "min": 664.7000000000826,
-        "max": 926.000000000142
+        "mean": 733.901000000098,
+        "p10": 665.5600000000828,
+        "median": 733.1000000000981,
+        "p90": 813.6700000001165,
+        "min": 582.0000000000638,
+        "max": 905.1000000001372
       }
     }
   ],
   "robust": [
     {
-      "name": "Bølger, bakre halvdel først; neste gruppe når 75 % av forrige er ute; fletter inn, 1 tom plass bak",
+      "name": "Bølger, bakre halvdel først; neste gruppe når forrige er ute; fletter inn, 1 tom plass bak",
       "order": "Bølger, bakre halvdel først",
-      "trigger": 0.75,
+      "trigger": 1,
       "style": "fletter inn, 1 tom plass bak",
       "policy": {
         "groups": [
@@ -586,48 +662,289 @@ window.UTSTIGNING_OPTIMUM = {
           "AF@16-30",
           "AF@1-15"
         ],
-        "trigger": 0.75,
+        "trigger": 1,
         "prep": true,
-        "merge": 1
+        "merge": 1,
+        "freeGo": true
       },
       "fine": {
         "id": "x",
         "runs": 200,
-        "mean": 482.19500000004086,
-        "p10": 434.8900000000304,
-        "median": 478.1000000000402,
-        "p90": 532.0200000000524,
-        "min": 386.5000000000194,
-        "max": 635.800000000076
+        "mean": 472.56700000003866,
+        "p10": 431.13000000002955,
+        "median": 470.2500000000384,
+        "p90": 515.9200000000487,
+        "min": 394.30000000002116,
+        "max": 606.0000000000692
       },
       "robust": [
         {
           "variant": "Standard",
-          "median": 475.70000000003967
+          "median": 471.0500000000386
         },
         {
           "variant": "Halvparten klare ved landing",
-          "median": 483.7000000000415
+          "median": 479.15000000004045
         },
         {
           "variant": "Få tar ned bagasjen fra setet (30 %)",
-          "median": 548.2000000000561
+          "median": 549.4000000000564
         },
         {
           "variant": "Mange kofferter i annen rad (50 %)",
-          "median": 520.0000000000497
+          "median": 521.7000000000501
         },
         {
           "variant": "Mange trege (25 %)",
-          "median": 534.8500000000531
+          "median": 520.9500000000498
         },
         {
           "variant": "Mange utålmodige (25 %)",
-          "median": 482.1000000000411
+          "median": 485.2000000000418
         },
         {
           "variant": "Business i rad 1–4 går først",
-          "median": 494.10000000004385
+          "median": 495.2500000000441
+        }
+      ]
+    },
+    {
+      "name": "Seks kolonner, én side om gangen; neste gruppe når forrige er ute; fletter inn, 1 tom plass bak",
+      "order": "Seks kolonner, én side om gangen",
+      "trigger": 1,
+      "style": "fletter inn, 1 tom plass bak",
+      "policy": {
+        "groups": [
+          "C",
+          "D",
+          "B",
+          "E",
+          "A",
+          "F"
+        ],
+        "trigger": 1,
+        "prep": true,
+        "merge": 1,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 474.59950000003926,
+        "p10": 435.7300000000306,
+        "median": 474.4500000000394,
+        "p90": 516.810000000049,
+        "min": 394.1000000000211,
+        "max": 578.500000000063
+      },
+      "robust": [
+        {
+          "variant": "Standard",
+          "median": 464.7500000000372
+        },
+        {
+          "variant": "Halvparten klare ved landing",
+          "median": 474.1000000000393
+        },
+        {
+          "variant": "Få tar ned bagasjen fra setet (30 %)",
+          "median": 498.50000000004485
+        },
+        {
+          "variant": "Mange kofferter i annen rad (50 %)",
+          "median": 499.9500000000452
+        },
+        {
+          "variant": "Mange trege (25 %)",
+          "median": 526.4500000000512
+        },
+        {
+          "variant": "Mange utålmodige (25 %)",
+          "median": 489.0500000000427
+        },
+        {
+          "variant": "Business i rad 1–4 går først",
+          "median": 493.25000000004366
+        }
+      ]
+    },
+    {
+      "name": "Bølger, oddetallsrader først; neste gruppe når forrige er ute; fletter inn, 1 tom plass bak",
+      "order": "Bølger, oddetallsrader først",
+      "trigger": 1,
+      "style": "fletter inn, 1 tom plass bak",
+      "policy": {
+        "groups": [
+          "CD@odd",
+          "CD@even",
+          "BE@odd",
+          "BE@even",
+          "AF@odd",
+          "AF@even"
+        ],
+        "trigger": 1,
+        "prep": true,
+        "merge": 1,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 475.0960000000394,
+        "p10": 435.65000000003056,
+        "median": 474.9000000000395,
+        "p90": 515.0700000000486,
+        "min": 395.9000000000215,
+        "max": 572.5000000000616
+      },
+      "robust": [
+        {
+          "variant": "Standard",
+          "median": 474.1500000000393
+        },
+        {
+          "variant": "Halvparten klare ved landing",
+          "median": 478.30000000004026
+        },
+        {
+          "variant": "Få tar ned bagasjen fra setet (30 %)",
+          "median": 505.3500000000464
+        },
+        {
+          "variant": "Mange kofferter i annen rad (50 %)",
+          "median": 503.40000000004596
+        },
+        {
+          "variant": "Mange trege (25 %)",
+          "median": 524.8000000000508
+        },
+        {
+          "variant": "Mange utålmodige (25 %)",
+          "median": 483.50000000004144
+        },
+        {
+          "variant": "Business i rad 1–4 går først",
+          "median": 490.15000000004295
+        }
+      ]
+    },
+    {
+      "name": "Bølger, bakre halvdel først; neste gruppe når forrige er ute; fletter inn, 2 tomme plasser bak",
+      "order": "Bølger, bakre halvdel først",
+      "trigger": 1,
+      "style": "fletter inn, 2 tomme plasser bak",
+      "policy": {
+        "groups": [
+          "CD@16-30",
+          "CD@1-15",
+          "BE@16-30",
+          "BE@1-15",
+          "AF@16-30",
+          "AF@1-15"
+        ],
+        "trigger": 1,
+        "prep": true,
+        "merge": 2,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 478.4915000000399,
+        "p10": 438.59000000003124,
+        "median": 475.65000000003965,
+        "p90": 523.3300000000504,
+        "min": 405.30000000002366,
+        "max": 609.1000000000699
+      },
+      "robust": [
+        {
+          "variant": "Standard",
+          "median": 466.85000000003765
+        },
+        {
+          "variant": "Halvparten klare ved landing",
+          "median": 489.80000000004287
+        },
+        {
+          "variant": "Få tar ned bagasjen fra setet (30 %)",
+          "median": 536.7500000000534
+        },
+        {
+          "variant": "Mange kofferter i annen rad (50 %)",
+          "median": 528.1000000000515
+        },
+        {
+          "variant": "Mange trege (25 %)",
+          "median": 520.7000000000498
+        },
+        {
+          "variant": "Mange utålmodige (25 %)",
+          "median": 492.9500000000436
+        },
+        {
+          "variant": "Business i rad 1–4 går først",
+          "median": 501.8500000000456
+        }
+      ]
+    },
+    {
+      "name": "Bølger, oddetallsrader først; neste gruppe når forrige er ute; fletter inn, 2 tomme plasser bak",
+      "order": "Bølger, oddetallsrader først",
+      "trigger": 1,
+      "style": "fletter inn, 2 tomme plasser bak",
+      "policy": {
+        "groups": [
+          "CD@odd",
+          "CD@even",
+          "BE@odd",
+          "BE@even",
+          "AF@odd",
+          "AF@even"
+        ],
+        "trigger": 1,
+        "prep": true,
+        "merge": 2,
+        "freeGo": true
+      },
+      "fine": {
+        "id": "x",
+        "runs": 200,
+        "mean": 479.9355000000407,
+        "p10": 441.47000000003186,
+        "median": 477.9500000000402,
+        "p90": 522.9600000000504,
+        "min": 410.0000000000247,
+        "max": 566.9000000000603
+      },
+      "robust": [
+        {
+          "variant": "Standard",
+          "median": 472.60000000003896
+        },
+        {
+          "variant": "Halvparten klare ved landing",
+          "median": 486.70000000004217
+        },
+        {
+          "variant": "Få tar ned bagasjen fra setet (30 %)",
+          "median": 508.65000000004716
+        },
+        {
+          "variant": "Mange kofferter i annen rad (50 %)",
+          "median": 502.45000000004575
+        },
+        {
+          "variant": "Mange trege (25 %)",
+          "median": 537.4000000000536
+        },
+        {
+          "variant": "Mange utålmodige (25 %)",
+          "median": 497.5000000000446
+        },
+        {
+          "variant": "Business i rad 1–4 går først",
+          "median": 492.4500000000435
         }
       ]
     },
@@ -644,223 +961,47 @@ window.UTSTIGNING_OPTIMUM = {
         ],
         "trigger": 1,
         "prep": true,
-        "merge": 1
+        "merge": 1,
+        "freeGo": true
       },
       "fine": {
         "id": "x",
         "runs": 200,
-        "mean": 484.83150000004184,
-        "p10": 434.3900000000303,
-        "median": 480.55000000004077,
-        "p90": 539.8900000000542,
-        "min": 407.2000000000241,
-        "max": 643.7000000000778
+        "mean": 488.4130000000426,
+        "p10": 436.9800000000309,
+        "median": 486.55000000004213,
+        "p90": 545.0100000000554,
+        "min": 404.1000000000234,
+        "max": 616.7000000000717
       },
       "robust": [
         {
           "variant": "Standard",
-          "median": 484.1500000000416
+          "median": 488.1000000000425
         },
         {
           "variant": "Halvparten klare ved landing",
-          "median": 491.7000000000433
+          "median": 495.45000000004416
         },
         {
           "variant": "Få tar ned bagasjen fra setet (30 %)",
-          "median": 527.1500000000513
+          "median": 530.2500000000521
         },
         {
           "variant": "Mange kofferter i annen rad (50 %)",
-          "median": 505.8500000000465
+          "median": 526.3500000000511
         },
         {
           "variant": "Mange trege (25 %)",
-          "median": 539.6500000000542
+          "median": 546.6000000000557
         },
         {
           "variant": "Mange utålmodige (25 %)",
-          "median": 495.40000000004414
+          "median": 496.30000000004435
         },
         {
           "variant": "Business i rad 1–4 går først",
-          "median": 501.10000000004544
-        }
-      ]
-    },
-    {
-      "name": "Seks kolonner, én side om gangen; neste gruppe når 75 % av forrige er ute; fletter inn, 1 tom plass bak",
-      "order": "Seks kolonner, én side om gangen",
-      "trigger": 0.75,
-      "style": "fletter inn, 1 tom plass bak",
-      "policy": {
-        "groups": [
-          "C",
-          "D",
-          "B",
-          "E",
-          "A",
-          "F"
-        ],
-        "trigger": 0.75,
-        "prep": true,
-        "merge": 1
-      },
-      "fine": {
-        "id": "x",
-        "runs": 200,
-        "mean": 484.3110000000418,
-        "p10": 441.30000000003184,
-        "median": 482.30000000004117,
-        "p90": 529.8500000000519,
-        "min": 415.90000000002607,
-        "max": 600.9000000000681
-      },
-      "robust": [
-        {
-          "variant": "Standard",
-          "median": 482.75000000004127
-        },
-        {
-          "variant": "Halvparten klare ved landing",
-          "median": 492.1500000000434
-        },
-        {
-          "variant": "Få tar ned bagasjen fra setet (30 %)",
-          "median": 516.4500000000489
-        },
-        {
-          "variant": "Mange kofferter i annen rad (50 %)",
-          "median": 521.50000000005
-        },
-        {
-          "variant": "Mange trege (25 %)",
-          "median": 539.100000000054
-        },
-        {
-          "variant": "Mange utålmodige (25 %)",
-          "median": 493.70000000004376
-        },
-        {
-          "variant": "Business i rad 1–4 går først",
-          "median": 490.0000000000429
-        }
-      ]
-    },
-    {
-      "name": "Bølger, oddetallsrader først; neste gruppe når 75 % av forrige er ute; fletter inn, 1 tom plass bak",
-      "order": "Bølger, oddetallsrader først",
-      "trigger": 0.75,
-      "style": "fletter inn, 1 tom plass bak",
-      "policy": {
-        "groups": [
-          "CD@odd",
-          "CD@even",
-          "BE@odd",
-          "BE@even",
-          "AF@odd",
-          "AF@even"
-        ],
-        "trigger": 0.75,
-        "prep": true,
-        "merge": 1
-      },
-      "fine": {
-        "id": "x",
-        "runs": 200,
-        "mean": 485.67400000004193,
-        "p10": 443.99000000003247,
-        "median": 485.6000000000419,
-        "p90": 530.7300000000521,
-        "min": 409.9000000000247,
-        "max": 599.2000000000677
-      },
-      "robust": [
-        {
-          "variant": "Standard",
-          "median": 480.05000000004065
-        },
-        {
-          "variant": "Halvparten klare ved landing",
-          "median": 492.6500000000435
-        },
-        {
-          "variant": "Få tar ned bagasjen fra setet (30 %)",
-          "median": 518.1000000000492
-        },
-        {
-          "variant": "Mange kofferter i annen rad (50 %)",
-          "median": 515.6000000000487
-        },
-        {
-          "variant": "Mange trege (25 %)",
-          "median": 537.7000000000537
-        },
-        {
-          "variant": "Mange utålmodige (25 %)",
-          "median": 486.4000000000421
-        },
-        {
-          "variant": "Business i rad 1–4 går først",
-          "median": 491.95000000004336
-        }
-      ]
-    },
-    {
-      "name": "Seks kolonner, én side om gangen; neste gruppe når 75 % av forrige er ute; fletter inn, 2 tomme plasser bak",
-      "order": "Seks kolonner, én side om gangen",
-      "trigger": 0.75,
-      "style": "fletter inn, 2 tomme plasser bak",
-      "policy": {
-        "groups": [
-          "C",
-          "D",
-          "B",
-          "E",
-          "A",
-          "F"
-        ],
-        "trigger": 0.75,
-        "prep": true,
-        "merge": 2
-      },
-      "fine": {
-        "id": "x",
-        "runs": 200,
-        "mean": 490.0940000000428,
-        "p10": 447.45000000003324,
-        "median": 487.00000000004223,
-        "p90": 538.1500000000538,
-        "min": 409.5000000000246,
-        "max": 578.9000000000631
-      },
-      "robust": [
-        {
-          "variant": "Standard",
-          "median": 486.25000000004206
-        },
-        {
-          "variant": "Halvparten klare ved landing",
-          "median": 494.55000000004395
-        },
-        {
-          "variant": "Få tar ned bagasjen fra setet (30 %)",
-          "median": 519.9500000000496
-        },
-        {
-          "variant": "Mange kofferter i annen rad (50 %)",
-          "median": 530.6000000000521
-        },
-        {
-          "variant": "Mange trege (25 %)",
-          "median": 538.2000000000538
-        },
-        {
-          "variant": "Mange utålmodige (25 %)",
-          "median": 492.6000000000435
-        },
-        {
-          "variant": "Business i rad 1–4 går først",
-          "median": 504.3500000000462
+          "median": 496.35000000004436
         }
       ]
     },
@@ -914,17 +1055,17 @@ window.UTSTIGNING_OPTIMUM = {
   "behavior": [
     {
       "name": "Slik folk gjør i dag (standard)",
-      "forslag": 490.15000000004295,
+      "forslag": 492.30000000004344,
       "vanlig": 733.0500000000982
     },
     {
       "name": "Alle tar ned bagasjen ved setet mens de venter",
-      "forslag": 434.25000000003024,
+      "forslag": 430.35000000002935,
       "vanlig": 608.6500000000699
     },
     {
       "name": "… og alle har bagasjen over egen rad",
-      "forslag": 362.65000000001396,
+      "forslag": 362.95000000001403,
       "vanlig": 480.50000000004076
     },
     {

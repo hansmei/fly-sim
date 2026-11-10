@@ -2,6 +2,8 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const U = require('./sim.js');
+// Scenario uten regelen om ledig gang, for å teste de andre reglene for seg.
+const strict = (id) => ({ ...U.SCENARIOS.find((s) => s.id === id), freeGo: false });
 
 test('alle 180 kommer ut i alle scenarier, uten at noe låser seg', () => {
   for (const s of U.SCENARIOS) {
@@ -33,7 +35,7 @@ test('strenge bølger uten utålmodige: ingen midtsete går før siste midtgangs
 });
 
 test('ditt forslag: de som går før bølgen sin, har bagasjen klar og fletter inn', () => {
-  const sim = U.createSim('forslag', 11, { impatientShare: 0 });
+  const sim = U.createSim(strict('forslag'), 11, { impatientShare: 0 });
   sim.run();
   const merged = sim.agents.filter((a) => a.merged);
   assert.ok(merged.length > 10);
@@ -123,9 +125,29 @@ test('bakre dør: alle kommer ut i alle scenarier, ingen bakover før døra åpn
 });
 
 test('bakre dør: høflig rad for rad tømmer bakre halvdel bakfra etter åpning', () => {
-  const sim = U.createSim('rad', 4, { rearDoorAt: 60, impatientShare: 0 });
+  const sim = U.createSim(strict('rad'), 4, { rearDoorAt: 60, impatientShare: 0 });
   sim.run();
   const firstEnter = (row) => Math.min(...sim.agents.filter((a) => a.row === row && a.enterT > 60).map((a) => a.enterT));
   // Én rads overlapp: raden går tidligst samtidig med raden bak, men aldri før raden to bak.
   for (let row = U.PARAMS.rearSplit + 1; row <= U.PARAMS.rows - 2; row++) assert.ok(firstEnter(row) >= firstEnter(row + 2), 'rad ' + row);
+});
+
+test('ledig gang: vinduspassasjerer sitter ikke og venter når gangen bak dem er tom', () => {
+  for (const id of ['rad', 'forslag', 'beste']) {
+    const sim = U.createSim(id, 2);
+    let idle = 0;
+    while (!sim.done) {
+      sim.step();
+      const occupied = new Set(sim.agents.filter((a) => a.depth === 0 && a.cell >= 0 && a.state !== 'out').map((a) => a.cell));
+      let emptyFrom = U.PARAMS.rows + 1;
+      for (let c = U.PARAMS.rows; c >= 1 && !occupied.has(c); c--) emptyFrom = c;
+      for (const a of sim.agents) {
+        if (a.group !== 'window' || a.cell >= 0 || a.go || !(a.state === 'seated' || a.state === 'ready')) continue;
+        const blocked = sim.agents.some((b) => b !== a && b.row === a.row && b.side === a.side && b.cell < 0 && b.state !== 'out' && b.depth < a.depth);
+        if (a.row >= emptyFrom && !blocked) idle += U.PARAMS.dt;
+      }
+    }
+    // Under 1 minutt samlet per fly (uten regelen var det 6–8 minutter).
+    assert.ok(idle < 60, `${id}: ${idle.toFixed(0)} s`);
+  }
 });
