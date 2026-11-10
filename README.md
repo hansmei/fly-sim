@@ -26,6 +26,8 @@ Medianen av 200 simulerte flyginger per scenario.
 - **Resten opp til optimum skyldes bagasjen, ikke rekkefølgen.** Tar alle ned
   bagasjen ved setet, har den over egen rad og ingen er trege, tar beste løsning
   5:42. Kortere enn 5:16 går det bare med en dør til.
+- **Med bakre dør åpnet etter 1 minutt** tar vanlig praksis 8:09 og ditt forslag
+  6:07. Se [Med bakre dør](#med-bakre-dør).
 - **Business først koster rundt et halvt minutt** med beste løsning, men nesten
   ingenting med vanlig praksis.
 
@@ -79,6 +81,32 @@ Hvert scenario kjøres i tre kabiner:
 - **Bare økonomi:** 180 passasjerer.
 - **Business i rad 1–4:** midtsetet står tomt, så det er 172 passasjerer. Business følger samme regler som resten.
 - **Business i rad 1–4 går først:** forhenget bak rad 4 holder økonomi tilbake til siste businesspassasjer er ute. Økonomi kan imens reise seg og ta ned bagasjen bak forhenget.
+
+## Med bakre dør
+
+Alle scenariene er også kjørt med bakre dør (2L) åpnet etter 1, 2 og 3 minutter.
+Når den åpnes, går alle i rad 16–30 dit, også de som alt står i midtgangen.
+Reglene for hvem som går når, er de samme som med bare fremre dør. For høflig rad
+for rad betyr det at bakre halvdel tømmes rad for rad bakfra. Bare økonomi,
+standardinnstillinger, 200 flyginger per scenario. Tiden er medianen til siste
+passasjer er ute, og andelen som går ut bakre dør står i parentes.
+
+| Scenario | Bare fremre dør | Bakre dør etter 1 min | Bakre dør etter 2 min | Bakre dør etter 3 min |
+|---|---|---|---|---|
+| Seks bølger, bakre halvdel først | 7:58 | 6:21 (43 % bak) | 6:16 (29 % bak) | 6:38 (24 % bak) |
+| **Tre bølger med innfletting (ditt forslag)** | 8:00 | 6:07 (50 % bak) | 6:38 (43 % bak) | 6:34 (28 % bak) |
+| Tre bølger, alle sitter til sin tur | 10:38 | 7:42 (50 % bak) | 7:53 (43 % bak) | 8:01 (33 % bak) |
+| Tre bølger, gjør seg klare imens | 11:24 | 7:38 (50 % bak) | 7:51 (42 % bak) | 7:59 (33 % bak) |
+| Vanlig praksis: alle går når de kan | 12:09 | 8:09 (50 % bak) | 9:10 (50 % bak) | 10:13 (50 % bak) |
+| Høflig rad for rad | 12:57 | 8:09 (49 % bak) | 8:59 (48 % bak) | 9:51 (46 % bak) |
+
+- **Vanlig praksis tjener mest på bakre dør.** Hvert minutt den holdes stengt,
+  koster rundt ett minutt.
+- **Ditt forslag med bare fremre dør (8:00)** er omtrent like raskt som vanlig
+  praksis med bakre dør åpnet etter 1 minutt (8:09).
+- **Med bakre dør er bølgereglene fortsatt raskest**, og lite følsomme for når
+  døra åpnes. Midt- og vindussetene i bakre halvdel har uansett ikke begynt å gå
+  når den åpnes.
 
 ## Kjøre
 

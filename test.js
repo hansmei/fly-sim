@@ -93,3 +93,39 @@ test('business først: ingen fra økonomi går ut før siste businesspassasjer e
     for (const a of sim.agents.filter((x) => !x.business)) assert.ok(a.exitT > lastBusiness, s.id);
   }
 });
+
+test('bakre dør: ingen flyging låser seg (alle scenarier, 1–3 min, 25 flyginger hver)', () => {
+  for (const s of U.SCENARIOS) {
+    for (const at of [60, 120, 180]) {
+      for (let sd = 1; sd <= 25; sd++) {
+        const sim = U.createSim(s.id, sd, { rearDoorAt: at });
+        sim.run();
+        assert.strictEqual(sim.out, 180, `${s.id}, ${at} s, frø ${sd}`);
+      }
+    }
+  }
+});
+
+test('bakre dør: alle kommer ut i alle scenarier, ingen bakover før døra åpnes', () => {
+  for (const s of U.SCENARIOS) {
+    for (const at of [60, 120, 180]) {
+      const sim = U.createSim(s.id, 3, { rearDoorAt: at, otherRowShare: 0.5, impatientShare: 0.2 });
+      sim.run();
+      assert.strictEqual(sim.out, 180, `${s.id} ${at}`);
+      const rear = sim.agents.filter((a) => a.exitDoor === 'rear');
+      assert.ok(rear.length > 20, `${s.id} ${at}: ${rear.length} ut bak`);
+      for (const a of rear) {
+        assert.ok(a.exitT > at, `${s.id} ${at}`);
+        assert.ok(a.row > U.PARAMS.rearSplit, `${s.id} ${at}: rad ${a.row} gikk bak`);
+      }
+    }
+  }
+});
+
+test('bakre dør: høflig rad for rad tømmer bakre halvdel bakfra etter åpning', () => {
+  const sim = U.createSim('rad', 4, { rearDoorAt: 60, impatientShare: 0 });
+  sim.run();
+  const firstEnter = (row) => Math.min(...sim.agents.filter((a) => a.row === row && a.enterT > 60).map((a) => a.enterT));
+  // Én rads overlapp: raden går tidligst samtidig med raden bak, men aldri før raden to bak.
+  for (let row = U.PARAMS.rearSplit + 1; row <= U.PARAMS.rows - 2; row++) assert.ok(firstEnter(row) >= firstEnter(row + 2), 'rad ' + row);
+});

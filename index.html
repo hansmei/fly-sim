@@ -126,6 +126,14 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
 .dot.back { background: var(--muted); position: relative; }
 .dot.back::after { content: ""; position: absolute; left: 3px; top: 4px; border: 3px solid transparent; border-top: 4px solid var(--card); }
 .dot.slow { background: var(--muted); position: relative; }
+.door-mark { width: 6px; height: 14px; background: var(--signal); display: inline-block; }
+.rear-grid { display: grid; gap: 28px; }
+.rear-chart { display: grid; gap: 6px; }
+.rear-chart h3 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 0; }
+td.best { color: var(--signal); font-weight: 600; }
+#rear-matrix th, #rear-matrix td { padding-inline: 6px; }
+#rear-matrix th.num { white-space: normal; min-width: 4.2em; }
+tr.mine td:first-child { color: var(--signal); font-weight: 600; }
 .curtain { width: 16px; height: 0; border-top: 2px dashed var(--signal); display: inline-block; }
 .sim-panel select.cabin-sel { font-weight: 500; font-size: 15px; padding: 8px 12px; }
 .dot.slow::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--card); }
@@ -229,7 +237,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
         <li><span><b>Bølge 2 og 3:</b> midtsetene går ut i gangen samtidig, så vindussetene.</span></li>
       </ol>
       <p class="note">Kabinpersonalet må annonsere bølgene tydelig og holde igjen dem som ikke er klare. Det bør prøves på noen ruter først for å se hvor godt passasjerene følger det.</p>
-      <p class="note"><b>Mer å hente:</b> får passasjerene beskjed ved ombordstigning om å legge bagasjen over egen rad, faller tiden til rundt 6 minutter. Kortere enn den teoretiske grensen går det bare med en dør til, for eksempel trapp bak.</p>
+      <p class="note"><b>Mer å hente:</b> får passasjerene beskjed ved ombordstigning om å legge bagasjen over egen rad, faller tiden til rundt 6 minutter. Kortere enn den teoretiske grensen går det bare med en dør til. Seksjonen «Med bakre dør» lenger ned viser hva det gir å åpne bakre dør etter 1, 2 eller 3 minutter.</p>
     </div>
 
     <div class="exec-block span">
@@ -250,6 +258,13 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
       <select id="scen"></select>
       <label for="kabin" class="sr">Kabin</label>
       <select id="kabin" class="cabin-sel"></select>
+      <label for="dor" class="sr">Bakre dør</label>
+      <select id="dor" class="cabin-sel">
+        <option value="">Bare fremre dør</option>
+        <option value="60">Bakre dør åpnes etter 1 min</option>
+        <option value="120">Bakre dør åpnes etter 2 min</option>
+        <option value="180">Bakre dør åpnes etter 3 min</option>
+      </select>
       <div class="readout">
         <div><div class="big" id="clock">0:00</div><div class="lbl">tid</div></div>
         <div><div class="big" id="outcount">0</div><div class="lbl">av <span id="total">180</span> ute</div></div>
@@ -276,6 +291,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
         <span><i class="dot back"></i>Går bakover etter koffert</span>
         <span><i class="dot slow"></i>Treg passasjer</span>
         <span><i class="curtain"></i>Forheng, stengt til business er ute</span>
+        <span><i class="door-mark"></i>Bakre dør 2L, farget når den er åpen</span>
       </div>
     </section>
 
@@ -290,6 +306,15 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
           <summary>Vis som tabell</summary>
           <div class="tbl-wrap"><table id="tbl"></table></div>
         </details>
+      </section>
+
+      <section aria-labelledby="rear-h">
+        <h2 id="rear-h">Med bakre dør</h2>
+        <p class="sub">Alle seks scenariene kjørt på nytt, der bakre dør (2L) åpnes etter 1, 2 eller 3 minutter. Når den åpnes, går alle i rad 16–30 dit, også de som alt står i midtgangen. Reglene for hvem som går når, er de samme som før. For høflig rad for rad betyr det at bakre halvdel tømmes rad for rad bakfra. Bare økonomi, standardinnstillinger, <span data-runs></span> flyginger per scenario.</p>
+        <div class="tbl-wrap"><table id="rear-matrix"></table></div>
+        <p class="chart-note">Tid til siste passasjer er ute, median. Raskeste i hver kolonne er uthevet. Trykk på et scenario i grafene under for å se det animert med samme dør.</p>
+        <div class="rear-grid" id="rear-charts"></div>
+        <div class="prose"><ul id="rear-findings"></ul></div>
       </section>
 
       <section aria-labelledby="beh-h">
@@ -384,39 +409,91 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
   /* ---------- Resultatgraf ---------- */
   const chart = $('chart');
   let current = byId; // resultatene grafen viser nå
-  function renderChart(resById, srcText, custom) {
-    current = resById;
-    const list = Object.values(resById);
-    const rawMax = Math.max(...list.map((r) => r.p90)) / 60;
+  // Tegner én søyle per scenario, sortert etter median. Brukes av alle tidsgrafene.
+  function scaleFor(lists) {
+    const rawMax = Math.max(...lists.flat().map((r) => r.p90)) / 60;
     const tick = rawMax > 12 ? 4 : 2;
-    const maxMin = Math.ceil(rawMax / tick) * tick;
+    return { tick, maxMin: Math.ceil(rawMax / tick) * tick };
+  }
+  function drawBars(container, axisEl, resById, scale, opts = {}) {
+    const { maxMin, tick } = scale;
     const xPct = (s) => (s / 60 / maxMin) * 100;
     const sorted = U.SCENARIOS.slice().sort((a, b) => resById[a.id].median - resById[b.id].median);
-    chart.innerHTML = '';
+    let grid = '';
+    for (let m = 0; m <= maxMin; m += tick) grid += `<i class="grid" style="left:${(m / maxMin) * 100}%"></i>`;
+    container.innerHTML = '';
     for (const s of sorted) {
       const r = resById[s.id];
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'bar-row' + (s.id === MINE ? ' mine' : '');
       b.dataset.id = s.id;
-      b.setAttribute('aria-pressed', String(s.id === scenario));
+      b.setAttribute('aria-pressed', String(!!opts.pressed && s.id === scenario));
       b.title = `${s.name}: median ${fmt(r.median)}, 8 av 10 mellom ${fmt(r.p10)} og ${fmt(r.p90)}`;
-      let grid = '';
-      for (let m = 0; m <= maxMin; m += tick) grid += `<i class="grid" style="left:${(m / maxMin) * 100}%"></i>`;
-      b.innerHTML = `<span class="bar-head"><span class="bar-name">${s.name}<span class="bar-tag${s.id === MINE ? ' mine' : ''}">${s.short}</span></span><span class="bar-val">${fmt(r.median)}</span></span>
+      const extra = opts.extra ? opts.extra(r) : '';
+      b.innerHTML = `<span class="bar-head"><span class="bar-name">${s.name}<span class="bar-tag${s.id === MINE ? ' mine' : ''}">${s.short}${extra}</span></span><span class="bar-val">${fmt(r.median)}</span></span>
         <span class="track">${grid}<i class="range" style="left:${xPct(r.p10)}%;width:${xPct(r.p90) - xPct(r.p10)}%"></i><i class="med" style="left:${xPct(r.median)}%"></i></span>`;
-      b.addEventListener('click', () => { select(s.id); if (window.matchMedia('(max-width: 899px)').matches) document.querySelector('.sim-panel').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-      chart.appendChild(b);
+      b.addEventListener('click', () => { opts.onClick ? opts.onClick(s.id) : select(s.id); if (window.matchMedia('(max-width: 899px)').matches) document.querySelector('.sim-panel').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      container.appendChild(b);
     }
-    const axis = $('axis');
-    axis.innerHTML = '';
-    for (let m = 0; m <= maxMin; m += tick) axis.insertAdjacentHTML('beforeend', `<span style="left:${(m / maxMin) * 100}%">${m}${m === maxMin ? ' min' : ''}</span>`);
+    axisEl.innerHTML = '';
+    for (let m = 0; m <= maxMin; m += tick) axisEl.insertAdjacentHTML('beforeend', `<span style="left:${(m / maxMin) * 100}%">${m}${m === maxMin ? ' min' : ''}</span>`);
+    return sorted;
+  }
+  function renderChart(resById, srcText, custom) {
+    current = resById;
+    const sorted = drawBars(chart, $('axis'), resById, scaleFor([Object.values(resById)]), { pressed: true });
     $('tbl').innerHTML = '<thead><tr><th>Scenario</th><th class="num">Median</th><th class="num">10 %</th><th class="num">90 %</th></tr></thead><tbody>' +
       sorted.map((s) => { const r = resById[s.id]; return `<tr><td>${s.name}</td><td class="num">${fmt(r.median)}</td><td class="num">${fmt(r.p10)}</td><td class="num">${fmt(r.p90)}</td></tr>`; }).join('') + '</tbody>';
     const src = $('chart-src');
     src.textContent = srcText; src.classList.toggle('custom', !!custom);
   }
-  const srcText = (runs, custom) => `${cabinDef().name}. ${custom ? 'Dine innstillinger' : 'Standardinnstillinger'}, ${runs} flyginger per scenario.`;
-  const showDefaultChart = () => renderChart(resultsFor(cabin), srcText(RES.runs, false), false);
+  // Bakre dør: null = bare fremre dør, ellers sekunder til den åpnes.
+  let door = null;
+  const doorText = () => (door === null ? 'bare fremre dør' : `bakre dør åpnes etter ${door / 60} min`);
+  const rearFor = (at) => Object.fromEntries(RES.rear[at].map((r) => [r.id, r]));
+  const srcText = (runs, custom) => `${cabinDef().name}, ${doorText()}. ${custom ? 'Dine innstillinger' : 'Standardinnstillinger'}, ${runs} flyginger per scenario.`;
+  function showDefaultChart() {
+    if (door === null) renderChart(resultsFor(cabin), srcText(RES.runs, false), false);
+    else if (cabin === 'okonomi') renderChart(rearFor(door), srcText(RES.runs, false), false);
+    else renderChart(resultsFor(cabin), `${cabinDef().name}, bare fremre dør. Med bakre dør er denne kabinen ikke regnet ut på forhånd. Trykk «Kjør scenariene på nytt».`, true);
+  }
+
+  /* ---------- Bakre dør ---------- */
+  const REAR_AT = Object.keys(RES.rear).map(Number).sort((a, b) => a - b);
+  function renderRear() {
+    const front = resultsFor('okonomi');
+    const cols = [{ label: 'Bare fremre', res: front }, ...REAR_AT.map((at) => ({ label: `Bak etter ${at / 60} min`, res: rearFor(at) }))];
+    const order = U.SCENARIOS.slice().sort((a, b) => front[a.id].median - front[b.id].median);
+    const bestIn = cols.map((c) => Math.min(...order.map((s) => c.res[s.id].median)));
+    $('rear-matrix').innerHTML = '<thead><tr><th>Scenario</th>' + cols.map((c) => `<th class="num">${c.label}</th>`).join('') + '</tr></thead><tbody>' +
+      order.map((s) => `<tr${s.id === MINE ? ' class="mine"' : ''}><td>${s.short}</td>` + cols.map((c, i) => {
+        const v = c.res[s.id].median;
+        return `<td class="num${v === bestIn[i] ? ' best' : ''}">${fmt(v)}</td>`;
+      }).join('') + '</tr>').join('') + '</tbody>';
+    // Felles skala for alle grafene, så de kan sammenlignes direkte.
+    const scale = scaleFor([Object.values(front), ...REAR_AT.map((at) => RES.rear[at])]);
+    const wrap = $('rear-charts');
+    wrap.innerHTML = '';
+    for (const at of REAR_AT) {
+      const box = document.createElement('div');
+      box.className = 'rear-chart';
+      box.innerHTML = `<h3>Bakre dør åpnes etter ${at / 60} minutt${at > 60 ? 'er' : ''}</h3><p class="sub">Tid til siste passasjer er ute. Andelen som går ut bakre dør, står ved hvert scenario.</p><div class="chart"></div><div class="axis"></div>`;
+      wrap.appendChild(box);
+      drawBars(box.querySelector('.chart'), box.querySelector('.axis'), rearFor(at), scale, {
+        extra: (r) => ` · ${Math.round(r.rearShare * 100)} % ut bak`,
+        onClick: (id) => { if (cabin !== 'okonomi') { cabin = 'okonomi'; cabSel.value = cabin; } door = at; dorSel.value = String(at); showDefaultChart(); select(id); },
+      });
+    }
+    const m = (res, id) => fmtMin(res[id].median);
+    const r1 = rearFor(REAR_AT[0]), r3 = rearFor(REAR_AT[REAR_AT.length - 1]);
+    const vf = front.fritt.median, v1 = r1.fritt.median, v3 = r3.fritt.median;
+    $('rear-findings').innerHTML = `
+      <li><b>Vanlig praksis tjener mest på bakre dør.</b> Den går fra ${m(front, 'fritt')} til ${m(r1, 'fritt')} når døra åpnes etter 1 minutt. Hvert minutt døra holdes stengt, koster rundt ${nfm((v3 - v1) / (REAR_AT.length - 1) / 60)} minutt.</li>
+      <li><b>Ditt forslag med bare fremre dør tar ${m(front, MINE)}</b>, omtrent like lenge som vanlig praksis med bakre dør åpnet etter 1 minutt (${m(r1, 'fritt')}).</li>
+      <li><b>Med bakre dør er bølgereglene fortsatt raskest:</b> ditt forslag tar ${m(r1, MINE)}–${m(r3, MINE)}, og er lite følsomt for når døra åpnes. Midt- og vindussetene i bakre halvdel har uansett ikke begynt å gå når den åpnes.</li>
+      <li><b>Jo senere bakre dør åpnes, jo færre går ut der</b> med bølgereglene. Midtgangssetene i bakre halvdel er da alt på vei mot fremre dør.</li>`;
+  }
+  const nfm = (x) => x.toLocaleString('nb-NO', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
 
   /* ---------- Atferd ---------- */
   const P = RES.params;
@@ -447,7 +524,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     return o;
   }
   let lastRunKey = '{}';
-  const simOverrides = () => Object.assign({}, cabinDef().overrides, behavior);
+  const simOverrides = () => Object.assign({}, cabinDef().overrides, behavior, door === null ? {} : { rearDoorAt: door });
   slidersEl.addEventListener('input', () => {
     behavior = readBehavior();
     const key = JSON.stringify(behavior);
@@ -528,7 +605,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     const avail = Math.max(420, window.innerHeight - 120);
     const rowH = Math.max(13, Math.min(c * 0.62, (avail - 2.2 * c) / (R + 1.6)));
     const noseH = 1.5 * c, top = noseH + rowH * 0.6;
-    const H = top + (R + 1) * rowH + 0.6 * c;
+    const H = top + (R + 1) * rowH + 0.6 * c + rowH * 1.4; // plass til bakre dør (2L) nederst
     const dpr = window.devicePixelRatio || 1;
     canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
@@ -558,6 +635,14 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     ctx.font = `600 ${Math.round(c * 0.3)}px ${css('--font-display') || 'sans-serif'}`;
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
     ctx.fillText('1L', L + 6, dy - geo.rowH * 0.9);
+    if (sim && sim.hasRear) {
+      // Bakre dør 2L: farget når den er åpen
+      const ry = rowY(R + 1);
+      ctx.fillStyle = sim.rearOpen ? colors.signal : colors.line;
+      ctx.fillRect(L - 3, ry - geo.rowH * 0.6, 6, geo.rowH * 1.2);
+      ctx.fillStyle = sim.rearOpen ? colors.signal : colors.muted;
+      ctx.fillText(sim.rearOpen ? '2L' : '2L stengt', L + 6, ry + geo.rowH * 0.9);
+    }
     // Seter og radnummer
     const sw = c * 0.8, sh = Math.max(8, geo.rowH * 0.8);
     ctx.fillStyle = colors.seat;
@@ -618,7 +703,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
       }
       case 'door': {
         const x0 = seatX(0, 0), x1 = geo.m * 0.35;
-        return [x0 + (x1 - x0) * prog, rowY(0)];
+        return [x0 + (x1 - x0) * prog, rowY(a.cell)];
       }
     }
     return null;
@@ -719,6 +804,15 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
   layout();
   const cabSel = $('kabin');
   for (const c of CABINS) cabSel.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name}</option>`);
+  const dorSel = $('dor');
+  function setDoor(v) {
+    door = v === null || v === '' ? null : Number(v);
+    dorSel.value = door === null ? '' : String(door);
+    showDefaultChart(); lastRunKey = '{}';
+    $('run-status').textContent = JSON.stringify(behavior) === '{}' ? '' : 'Grafen viser ikke disse innstillingene ennå.';
+    reset();
+  }
+  dorSel.addEventListener('change', () => setDoor(dorSel.value));
   cabSel.addEventListener('change', () => {
     cabin = cabSel.value;
     showDefaultChart(); lastRunKey = '{}';
@@ -869,6 +963,7 @@ button.ctl:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px
     document.querySelector('.sim-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
+  renderRear();
   showDefaultChart();
   select(location.hash.slice(1) || MINE, true);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (sim) draw(); });

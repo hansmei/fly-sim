@@ -51,7 +51,27 @@ const summary = [0.7, 0.75, 0.8, 0.86, 0.9, 1].map((lf) => {
   return row;
 });
 
-const payload = { summary, generated: new Date().toISOString().slice(0, 10), runs, params: U.PARAMS, cabins: CABINS, results: cabins };
+// Bakre dør åpnes etter 1, 2 og 3 minutter, for alle scenarier (bare økonomi).
+const REAR = [60, 120, 180];
+const rear = {};
+for (const at of REAR) {
+  console.log(`\nBakre dør åpnes etter ${at / 60} min`);
+  rear[at] = U.SCENARIOS.map((s) => {
+    const times = [], rearShare = [];
+    for (let sd = 1; sd <= runs; sd++) {
+      const sim = U.createSim(s.id, sd, { rearDoorAt: at });
+      sim.run();
+      times.push(sim.t);
+      rearShare.push(sim.outRear / sim.total);
+    }
+    const st = U.stats(s.id, times);
+    st.rearShare = median(rearShare);
+    console.log(`  ${s.name.padEnd(46)} median ${(st.median / 60).toFixed(1)} min  (p10 ${(st.p10 / 60).toFixed(1)} – p90 ${(st.p90 / 60).toFixed(1)}), ${Math.round(st.rearShare * 100)} % ut bak`);
+    return st;
+  });
+}
+
+const payload = { summary, rear, generated: new Date().toISOString().slice(0, 10), runs, params: U.PARAMS, cabins: CABINS, results: cabins };
 fs.writeFileSync(
   path.join(__dirname, 'results.js'),
   '// Generert av run.js. Ikke rediger for hånd.\nwindow.UTSTIGNING_RESULTS = ' + JSON.stringify(payload, null, 2) + ';\n'

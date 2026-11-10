@@ -14,6 +14,9 @@
  * - Noen har kofferten en rad foran (plukker den opp på vei ut) eller en til to
  *   rader bak (går mot strømmen, presser seg forbi folk og blokkerer imens).
  *
+ * Valgfritt: bakre dør (2L) som åpnes etter en gitt tid. Da snur alle i bakre halvdel,
+ * også de som alt står i midtgangen, og går bakover.
+ *
  * Valgfritt: business i de forreste radene med tomt midtsete. Skal business gå
  * først, holder forhenget økonomi tilbake til siste businesspassasjer er ute.
  *
@@ -51,6 +54,8 @@
     squeezeTime: 2.5,      // s å presse seg forbi én person i midtgangen
     backWinP: 0.3,         // sjanse for at en som skal bakover får en ledig plass før en som skal fremover
     loadFactor: 1,         // andel solgte seter; tomme seter trekkes tilfeldig
+    rearDoorAt: null,      // sekunder til bakre dør (2L) åpnes; null = bare fremre dør
+    rearSplit: 15,         // når bakre dør er åpen, går rad 16 og bakover dit
     businessRows: 0,       // rader med business forrest (midtsetet står tomt der)
     businessFirst: false,  // business går først; forhenget holder økonomi tilbake til de er ute
     maxTime: 3600,
@@ -89,7 +94,7 @@
       name: 'Høflig rad for rad',
       short: 'Rad for rad',
       kind: 'rad',
-      desc: 'Slik det ville gått om alle var høflige. Hver rad venter på tur. Neste rad reiser seg når raden foran begynner å gå ut i midtgangen. De som alt står i midtgangen, går når køen beveger seg.',
+      desc: 'Slik det ville gått om alle var høflige. Hver rad venter på tur. Er bakre dør åpen, tømmes bakre halvdel rad for rad bakfra. Neste rad reiser seg når raden foran begynner å gå ut i midtgangen. De som alt står i midtgangen, går når køen beveger seg.',
     },
     {
       id: 'fritt',
@@ -170,7 +175,11 @@
     const agents = [];
     const seatOcc = new Array((R + 1) * 8).fill(null); // indeks: row*8 + (side<0?0:4) + depth
     const seatKey = (row, side, depth) => row * 8 + (side < 0 ? 0 : 4) + depth;
-    const aisle = new Array(R + 1).fill(null);
+    // Midtgangen: celle 0 er byssa ved fremre dør, 1..R er radene, R+1 er bakre bysse.
+    const aisle = new Array(R + 2).fill(null);
+    const hasRear = P.rearDoorAt !== null && P.rearDoorAt !== undefined;
+    const lastCell = hasRear ? R + 1 : R;
+    let rearOpen = false, outRear = 0;
     const rowLeft = new Int16Array(R + 2);      // personer i raden som ikke er i midtgangen ennå
     const rowEntered = new Int16Array(R + 2);   // personer fra raden som har gått ut i midtgangen
     const gTotal = new Int16Array(G + 1); // per gruppe: antall
@@ -200,7 +209,7 @@
         }
         const bagT = (bag ? Math.min(P.bagMax, lognormal(r, P.bagMedian, P.bagSigma)) : uni(r, P.noBag)) * pace;
         const a = {
-          id: agents.length, row, merged: false, business, letter: s.letter, side: s.side, depth: s.depth, seatDepth: s.depth,
+          id: agents.length, row, merged: false, business, dir: -1, exitDoor: null, letter: s.letter, side: s.side, depth: s.depth, seatDepth: s.depth,
           group: s.group, bag, bagRow, bagT, bagLeft: bagT, needBag: true,
           // Tar ned bagasjen (eller samler jakke og ting) mens de står ved setet og venter.
           pace, slow, seatBagger: !bag || (bagRow === row && u.seatBag < P.seatBagShare),
@@ -236,6 +245,7 @@
 
     const N = agents.length;
     const frontClear = new Uint8Array(R + 2);
+    const backClear = new Uint8Array(R + 2);
     let t = 0, out = 0;
     let relIdx = G > 0 ? 1 : 0; // antall grupper som er sluppet
 
@@ -253,6 +263,15 @@
         if (row >= 3) doneBefore = doneBefore && rowLeft[row - 2] === 0 ? 1 : 0;
         frontClear[row] = doneBefore && (rowEntered[row - 1] > 0 || rowLeft[row - 1] === 0) ? 1 : 0;
       }
+      // Med bakre dør åpen: bakre halvdel tømmes rad for rad bakfra, mot bakre dør.
+      if (rearOpen) {
+        backClear[R] = 1;
+        doneBefore = 1;
+        for (let row = R - 1; row > P.rearSplit; row--) {
+          if (row <= R - 2) doneBefore = doneBefore && rowLeft[row + 2] === 0 ? 1 : 0;
+          backClear[row] = doneBefore && (rowEntered[row + 1] > 0 || rowLeft[row + 1] === 0) ? 1 : 0;
+        }
+      }
     }
 
     let businessLeft = agents.filter((a) => a.business).length;
@@ -262,7 +281,7 @@
       if (a.impatient) return true;
       if (a.business && P.businessFirst) return true;
       if (kind === 'groups') return a.gi >= G || a.gi < relIdx;
-      if (kind === 'rad') return frontClear[a.row] === 1;
+      if (kind === 'rad') return rearOpen && a.row > P.rearSplit ? backClear[a.row] === 1 : frontClear[a.row] === 1;
       return true;
     }
 
@@ -279,6 +298,12 @@
     }
 
     function phase() {
+      const p = basePhase();
+      if (!hasRear) return p;
+      if (!rearOpen) return `${p}. Bakre dør åpnes om ${Math.max(0, Math.ceil(P.rearDoorAt - t))} s`;
+      return `${p}. Bakre dør er åpen for rad ${P.rearSplit + 1}–${R}`;
+    }
+    function basePhase() {
       if (curtainClosed()) return 'Business går ut først. Økonomi gjør seg klar bak forhenget';
       if (kind === 'groups') {
         const k = Math.min(relIdx, G) - 1;
@@ -291,13 +316,19 @@
     function setTimer(a, s) { a.timer = s; a.timerMax = s; }
 
     // Bestem hva en som nettopp har kommet til en celle i midtgangen skal gjøre.
+    // 'wait' = vil én plass fremover, 'back' = vil én plass bakover.
     function arrive(a) {
-      if (a.cell === 0 && !a.needBag) { a.state = 'door'; setTimer(a, P.doorTime); return; }
-      if (a.needBag && a.cell === a.bagRow) {
+      if (!a.needBag) {
+        const doorCell = a.dir < 0 ? 0 : R + 1;
+        if (a.cell === doorCell) { a.state = 'door'; setTimer(a, P.doorTime); return; }
+        a.state = a.dir < 0 ? 'wait' : 'back';
+        return;
+      }
+      if (a.cell === a.bagRow) {
         a.state = 'bag'; a.timer = Math.max(0.3, a.bagLeft); a.timerMax = a.bagT;
-      } else if (a.needBag && a.bagRow > a.cell) a.state = 'back';
-      else a.state = 'wait';
+      } else a.state = a.bagRow > a.cell ? 'back' : 'wait';
     }
+    const goesRear = (pos) => rearOpen && pos > P.rearSplit;
 
     function enterAisle(a, c) {
       seatOcc[seatKey(a.row, a.side, a.depth)] = null;
@@ -309,6 +340,7 @@
       a.enterT = t;
       rowLeft[a.row]--; gLeft[a.gi]--;
       rowEntered[a.row]++;
+      if (goesRear(a.row)) a.dir = 1;
       arrive(a);
     }
 
@@ -323,6 +355,20 @@
       const dt = P.dt;
       t += dt;
       computeClear();
+
+      // Bakre dør åpnes: alle i bakre halvdel snur, også de som står i midtgangen.
+      if (hasRear && !rearOpen && t >= P.rearDoorAt) {
+        rearOpen = true;
+        for (const a of agents) {
+          if (a.state === 'out' || a.state === 'door') continue;
+          // Posisjon: plassen i midtgangen (også byssa, plass 0), ellers raden de sitter i.
+          const inAisle = a.depth === 0 && a.cell >= 0;
+          if (goesRear(inAisle ? a.cell : a.row)) {
+            a.dir = 1;
+            if (a.state === 'wait' || a.state === 'back') arrive(a);
+          }
+        }
+      }
 
       // 1. Tidtakere og beslutninger.
       for (let i = 0; i < N; i++) {
@@ -363,7 +409,7 @@
             break;
           case 'bag':
             a.timer -= dt;
-            if (a.timer <= 0) { a.needBag = false; a.bagLeft = 0; a.state = a.cell === 0 ? 'door' : 'wait'; if (a.cell === 0) setTimer(a, P.doorTime); }
+            if (a.timer <= 0) { a.needBag = false; a.bagLeft = 0; arrive(a); }
             break;
           case 'move':
           case 'moveBack':
@@ -387,7 +433,9 @@
           case 'door':
             a.timer -= dt;
             if (a.timer <= 0) {
-              aisle[0] = null;
+              aisle[a.cell] = null;
+              a.exitDoor = a.cell === 0 ? 'front' : 'rear';
+              if (a.exitDoor === 'rear') outRear++;
               a.state = 'out'; a.cell = -1; a.exitT = t;
               out++; gOut[a.gi]++;
               if (a.business) businessLeft--;
@@ -397,7 +445,7 @@
       }
 
       // 2. En som skal bakover og har en som vil fremover rett bak seg, presser seg forbi.
-      for (let c = 1; c < R; c++) {
+      for (let c = 1; c < lastCell; c++) {
         const a = aisle[c], b = aisle[c + 1];
         if (a && b && a.state === 'back' && a.cell === c && b.state === 'wait' && b.cell === c + 1) {
           a.state = 'squeezeBack'; b.state = 'squeeze';
@@ -408,16 +456,16 @@
       }
 
       // 3. Fordel ledige midtgangsceller forfra og bakover.
-      for (let c = 0; c <= R; c++) {
+      for (let c = 0; c <= lastCell; c++) {
         if (aisle[c] !== null) continue;
         const ahead = c >= 1 ? aisle[c - 1] : null;
-        const behind = c + 1 <= R ? aisle[c + 1] : null;
+        const behind = c + 1 <= lastCell ? aisle[c + 1] : null;
         let walker = behind && behind.state === 'wait' && behind.cell === c + 1 ? behind : null;
         // Forhenget: økonomi kommer ikke forbi rad B før business er ute.
         if (walker && c <= B && !walker.business && curtainClosed()) walker = null;
         const backer = ahead && ahead.state === 'back' && ahead.cell === c - 1 ? ahead : null;
         let seatCand = null;
-        if (c >= 1) {
+        if (c >= 1 && c <= R) {
           const L = seatOcc[seatKey(c, -1, 1)], Rr = seatOcc[seatKey(c, 1, 1)];
           const lOk = L && mayEnter(L, c);
           const rOk = Rr && mayEnter(Rr, c);
@@ -439,6 +487,9 @@
       get total() { return N; },
       get businessRows() { return B; },
       get curtainClosed() { return curtainClosed(); },
+      get hasRear() { return hasRear; },
+      get rearOpen() { return rearOpen; },
+      get outRear() { return outRear; },
       get done() { return out === N || t >= P.maxTime; },
       get phase() { return phase(); },
       step,
